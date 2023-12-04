@@ -1,11 +1,11 @@
 import React from 'react';
 
-function NewPost(props) {
+function AllContent(props) {
     return (
         <div>
-            new Post
+            
         </div>
     );
 }
 
-export default NewPost;
+export default AllContent;

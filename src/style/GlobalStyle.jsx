@@ -47,7 +47,6 @@ table {
 }
 a{
  text-decoration: none;
- color: black;
 }
 img{
  display: block;
@@ -55,6 +54,10 @@ img{
 }
 button{
    cursor: pointer;
+}
+.container{
+    max-width: 1280px;
+    margin: 0 auto;
 }
 `
 
