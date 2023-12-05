@@ -2,7 +2,8 @@ import { initializeApp } from "firebase/app";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import {GoogleAuthProvider, getAuth, signInWithPopup, signOut} from 'firebase/auth';
+import {GoogleAuthProvider, getAuth, onAuthStateChanged, signInWithPopup, signOut} from 'firebase/auth';
+import { get, getDatabase, ref, remove, set } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -23,10 +24,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 //Google 소셜 로그인을 사용하기 위한 GoogleAuthProvider 객체를 생성 => 구글 로그인 수행 가능
 const googleAuthProvider = new GoogleAuthProvider();
+const database = getDatabase(app);
 const analytics = getAnalytics(app);
 
 //GoogleAuthProvider를 사용할 때마다 구글 팝업을 항상 띄우기를 원한다는 의미 => 자동 로그인 현상 방지
 googleAuthProvider.setCustomParameters({prompt : 'select_account'});
+
+
 
 //구글 로그인
 export async function googleLogIn() {
@@ -36,7 +40,6 @@ export async function googleLogIn() {
         //로그인이 성공하면 결과에서 사용자 정보를 가져오기
         const user = result.user;
         console.log(user);
-        console.log(user.displayName);
         //사용자 정보 반환
         return user;
     }catch(error){
@@ -47,10 +50,49 @@ export async function googleLogIn() {
 //구글 로그아웃
 export async function googleLogOut(){
     try{
+        //signOut() = Firebase Authentication에서 제공하는 함수, 현재 로그인된 사용자를 로그아웃시키는 역할
         await signOut(auth);
     }catch(error){
         console.error(error);
     }
 }
+
+//관리자 계정 관리
+async function admin(user){
+    try{
+        //snapShot = Firebase Realtime Database에서 데이터를 가져올 때 반환되는 객체
+        //'admin' 경로에서 데이터를 가져와서 그 순간의 상태를 snapShot에 저장하고 상태를 확인하여 존재 여부 판단
+        const snapShot = await get(ref(database, 'admin')); 
+
+        if(snapShot.exists()){
+            const admin = snapShot.val();
+            const isAdmin = admin.includes(user.email);
+            return {...user, isAdmin}
+        }
+        return user;
+    }catch(error){
+        console.error(error);
+    }
+}
+
+//로그인한 계정 정보 계속 유지
+//일반적으로 인증 상태에 따라 UI를 업데이트하는 데 사용
+export function onUserState(callback){
+    //인증 상태가 변경되면(사용자가 로그인하거나 로그아웃할 때) 이 함수가 호출
+    onAuthStateChanged(auth, async(user)=>{
+        if(user){
+            try{
+                const updateUser = await admin(user);
+                callback(updateUser);
+            }catch(error){
+                console.error(error);
+            }
+        }else{
+            callback(null);
+        }
+    })
+}
+
+
 
 export default firebase;

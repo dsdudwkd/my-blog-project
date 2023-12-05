@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { googleLogIn, googleLogOut } from '../api/firebase';
+import { googleLogIn, googleLogOut, onUserState } from '../api/firebase';
 import main_name from '../img/main_name.png';
 import styled from 'styled-components';
+import { useAuthContext } from '../context/AuthContext';
+import UserData from './UserData';
 
 function Header(props) {
 
     const [user, setUser] = useState('');
 
-    useEffect(()=>{
-        setUser(user);
-    },[])
+    useEffect(() => {
+        onUserState((user) => {
+            setUser(user);
+        })
+    }, [])
+
 
     //로그인
     const userLogIn = () => {
@@ -30,11 +35,26 @@ function Header(props) {
 
 
             <div className='userWrapper'>
-                <Link to='/search'>SEARCH</Link>
-                <Link to='/login'>
-                <button className='logInBtn'>LOGIN</button>
-                </Link>
-                <button className='logOutBtn' onClick={userLogOut}>LOGOUT</button>
+            <Link to='/search'>SEARCH</Link>
+
+                {user && user.isAdmin && (
+                    <Link to='/newPost'>
+                        <button className='newPostBtn'>글쓰기</button>
+                    </Link>
+                )}
+                {user ?
+                    (
+                        <>
+                            {user && <UserData user={user} />}
+                            <button className='logOutBtn' onClick={userLogOut}>LOGOUT</button>
+                        </>
+                    ) :
+                    (
+                        <Link to='/login'>
+                            <button className='logInBtn'>LOGIN</button>
+                        </Link>
+                    )}
+
             </div>
         </HeaderContainer>
     );
@@ -68,6 +88,7 @@ const HeaderContainer = styled.header`
             padding: 6px 12px;
             font-size: 16px;
         }
+        
     }
 
     
