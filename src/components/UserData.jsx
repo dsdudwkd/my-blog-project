@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { googleLogOut, onUserState } from '../api/firebase';
+import { logOut, onUserState } from '../api/firebase';
 
 //로그인한 계정의 정보(프로필 사진, 닉네임) 띄우기 위한 컴포넌트
 function UserData({ user: { photoURL, displayName } }) {
@@ -16,7 +16,7 @@ function UserData({ user: { photoURL, displayName } }) {
 
     //로그아웃
     const userLogOut = () => {
-        googleLogOut().then(setUser);
+        logOut().then(setUser);
     }
 
     return (

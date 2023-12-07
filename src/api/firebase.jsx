@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import {GoogleAuthProvider, getAuth, onAuthStateChanged, signInWithPopup, signOut} from 'firebase/auth';
+import {GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut} from 'firebase/auth';
 import { get, getDatabase, ref, remove, set } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
 
@@ -47,8 +47,8 @@ export async function googleLogIn() {
     }
 }
 
-//구글 로그아웃
-export async function googleLogOut(){
+//로그아웃
+export async function logOut(){
     try{
         //signOut() = Firebase Authentication에서 제공하는 함수, 현재 로그인된 사용자를 로그아웃시키는 역할
         await signOut(auth);
@@ -92,6 +92,35 @@ export function onUserState(callback){
         }
     })
 }
+
+//이메일로 회원가입하기
+export async function joinEmail(email, password){
+    const auth = getAuth();
+    try{
+        const userAccount = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userAccount.user;
+    }catch(error){
+        console.error(error);
+    }
+}
+
+//회원가입한 이메일로 로그인하기
+export async function loginEmail(email, password){
+    try{
+        const userAccount = await signInWithEmailAndPassword(auth, email, password);
+        return userAccount.user;
+    } catch (error){
+        console.error(error);
+    }
+}
+
+//중복 이메일 체크
+export async function checkEmail(email){
+    const database = getDatabase();
+    const userRef = ref();
+    
+}
+
 
 
 

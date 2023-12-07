@@ -1,29 +1,51 @@
-import React from 'react';
-import { googleLogIn, googleLogOut } from '../api/firebase';
+import React, { useState } from 'react';
+import { googleLogIn, googleLogOut, loginEmail } from '../api/firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
 import styled from 'styled-components';
 
 function Login(props) {
 
+    const [email, setEmail] = useState('');
+    const [pw, setPw] = useState('');
+    const [errMsg, setErrMsg] = useState('');
+
     const navigate = useNavigate();
     const googleLogin = async (e) => {
         const user = await googleLogIn();
         navigate('/');
     }
+    const emailLogin = async (e) => {
+        e.preventDefault();
+
+        try{
+            const user = await loginEmail(email, pw);
+            if(user){
+                navigate('/');
+            } else{
+                setErrMsg('이메일 혹은 비밀번호가 일치하지 않습니다')
+            }
+        } catch(error){
+            console.error(error);
+        }
+    }
 
     return (
-        <LogInContainer>
+        <LogInWrapper>
             <div className='container'>
                 <h2>Login</h2>
-                <form onSubmit={googleLogin}>
+                <form onSubmit={emailLogin} className='logInContainer'>
                     <div className='inputContainer'>
-                        <input type="text" placeholder='이메일' className='email'/>
-                        <input type="password" placeholder='비밀번호' className='pw' />
+                        <input type="text" placeholder='이메일' className='email' value={email}
+                            onChange={(e) => {setEmail(e.target.value)}}
+                        />
+                        <input type="password" placeholder='비밀번호' className='pw' value={pw} 
+                            onChange={(e) => {setPw(e.target.value)}}
+                        />
                     </div>
 
-                    <button className='logInBtn'>로그인</button>
-                    <button onClick={googleLogIn} className='googleBtn'>
+                    <button type='submit' className='logInBtn'>로그인</button>
+                    <button onClick={googleLogin} className='googleBtn'>
                         <FcGoogle className='googleSvg' />
                     </button>
                 </form>
@@ -31,14 +53,14 @@ function Login(props) {
                     회원가입
                 </Link>
             </div>
-        </LogInContainer>
+        </LogInWrapper>
 
     );
 }
 
 export default Login;
 
-const LogInContainer = styled.div`
+const LogInWrapper = styled.div`
     padding: 24px;
     display: flex;
     flex-direction: column;
@@ -46,11 +68,11 @@ const LogInContainer = styled.div`
     .container{
         width: 400px;
         h2{
-            margin-bottom: 50px;
+            margin: 50px auto;
             font-size: 30px;
             font-family: Noto Sans KR;
         }
-        form{
+        .logInContainer{
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -66,6 +88,9 @@ const LogInContainer = styled.div`
                     border: none;
                     border-bottom: 1px solid #b3b2b2;
                     background-color: transparent;
+                }
+                input::placeholder{
+                    font-family: Noto Sans KR;
                 }
             }
             .logInBtn{

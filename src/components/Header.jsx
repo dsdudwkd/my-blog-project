@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { googleLogIn, googleLogOut, onUserState } from '../api/firebase';
+import { googleLogIn, logOut, onUserState } from '../api/firebase';
 import main_name from '../img/main_name.png';
 import styled from 'styled-components';
 import { useAuthContext } from '../context/AuthContext';
@@ -24,7 +24,7 @@ function Header(props) {
 
     //로그아웃
     const userLogOut = () => {
-        googleLogOut().then(setUser);
+        logOut().then(setUser);
     }
 
     return (
