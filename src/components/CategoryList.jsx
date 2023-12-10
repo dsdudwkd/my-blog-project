@@ -1,11 +1,11 @@
 import React from 'react';
 
-function NewPost(props) {
+function CategoryList(props) {
     return (
         <div>
-            글쓰기
+            
         </div>
     );
 }
 
-export default NewPost;
+export default CategoryList;

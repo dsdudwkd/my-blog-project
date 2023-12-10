@@ -38,9 +38,15 @@ function Header(props) {
             <Link to='/search'>SEARCH</Link>
 
                 {user && user.isAdmin && (
+                    <>
                     <Link to='/newPost'>
                         <button className='newPostBtn'>글쓰기</button>
                     </Link>
+                    <Link to='editCategory'>
+                        <button>카테고리 편집</button>
+                    </Link>
+                    </>
+                    
                 )}
                 {user ?
                     (

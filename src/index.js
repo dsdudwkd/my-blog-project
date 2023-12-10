@@ -11,6 +11,7 @@ import Login from './pages/Login';
 import Join from './pages/Join';
 import Search from './pages/Search';
 import { useAuthContext } from './context/AuthContext';
+import AddCategory from './pages/AddCategory';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -45,6 +46,13 @@ const router = createBrowserRouter([
       { path: '/search', element: <Search /> },
       { path: '/login', element: <Login /> },
       { path: '/join', element: <Join /> },
+      {
+        path: '/editCategory',
+        element:
+         <AdminRoute checkAdmin>
+          <AddCategory />
+        </AdminRoute>
+      }
 
     ]
   }

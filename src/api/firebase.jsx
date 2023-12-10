@@ -5,6 +5,7 @@ import 'firebase/compat/firestore';
 import {GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut} from 'firebase/auth';
 import { get, getDatabase, ref, remove, set } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
+import { v4 as uuid } from 'uuid'; //고유 식별자를 생성해주는 패키지
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -116,9 +117,18 @@ export async function loginEmail(email, password){
 
 //중복 이메일 체크
 export async function checkEmail(email){
-    const database = getDatabase();
-    const userRef = ref();
+    // const database = getDatabase();
+    // const userRef = ref();
     
+}
+
+//카테고리 추가
+export async function addCategory(category){
+    const id = uuid();
+    return set(ref(database, `category/${id}`),{
+        ...category,
+        id
+    })
 }
 
 

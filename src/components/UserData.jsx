@@ -25,14 +25,7 @@ function UserData({ user: { photoURL, displayName } }) {
                 <img src={photoURL} alt={`${displayName}의 프로필 사진`} />
                 <span className='nickname'>{displayName}님</span>
             </button>
-            {/* <div>
-                <Link to='/newPost'>
-                    <button className='newPostBtn'>글쓰기</button>
-                </Link>
-                <Link>
-                    <button onClick={userLogOut}>LogOut</button>
-                </Link>
-            </div> */}
+            
         </UserDataWrapper>
     );
 }

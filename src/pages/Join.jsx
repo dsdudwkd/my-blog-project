@@ -7,6 +7,7 @@ import { checkEmail, joinEmail } from '../api/firebase';
 function Join(props) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [authNum, setAuthNum] = useState('');
     const [pw, setPw] = useState('');
     const [pw2, setPw2] = useState('');
 
@@ -47,11 +48,9 @@ function Join(props) {
             return;
         }
 
-        
-
         try {
             const user = await joinEmail(email, pw);
-            navigate('/');
+            navigate('/login');
         } catch (error) {
             console.error(error);
         }
@@ -72,8 +71,8 @@ function Join(props) {
                     <div className='nameWrap wrap'>
                         <label htmlFor="yourName">이름</label>
                         <div>
-                            <input type="text" id='yourName' placeholder='이름을 입력하세요' value={name} onChange={(e) => { setName(e.target.value) }} onMouseLeave={checkEmail}/>
-                           
+                            <input type="text" id='yourName' placeholder='이름을 입력하세요' value={name} onChange={(e) => { setName(e.target.value) }} onMouseLeave={checkEmail} />
+
                             {nameErr && <span>{nameErr}</span>}
                         </div>
                     </div>
@@ -88,14 +87,14 @@ function Join(props) {
                     </div>
                     <div className='emailAuthWrap wrap'>
                         <label htmlFor="emailAuthText">인증번호</label>
-                        <input type="text" id='emailAuthText' placeholder='인증번호를 입력하세요' />
+                        <input type="text" id='emailAuthText' placeholder='인증번호를 입력하세요' value={authNum} />
 
                     </div>
                     <div className='pwWrap wrap'>
                         <label htmlFor="password">비밀번호</label>
                         <div>
                             <input type="password" id='password' placeholder='영문자,숫자,특수문자 포함 최소8~16자' value={pw}
-                                onChange={(e) => {setPw(e.target.value)}} minLength={8} maxLength={16} />
+                                onChange={(e) => { setPw(e.target.value) }} minLength={8} maxLength={16} />
                             {pwErr && <span>{pwErr}</span>}
                         </div>
 
@@ -104,13 +103,13 @@ function Join(props) {
                         <label htmlFor="passwordConfirm">비밀번호 확인</label>
                         <div>
                             <input type="password" id='passwordConfirm' placeholder='비밀번호를 확인해주세요' value={pw2}
-                                onChange={(e) => {setPw2(e.target.value)}}    minLength={8} maxLength={16} />
+                                onChange={(e) => { setPw2(e.target.value) }} minLength={8} maxLength={16} />
                             {isSameErr && <span>{isSameErr}</span>}
                         </div>
 
                     </div>
-
                     <button type='submit' className='joinBtn'>가입하기</button>
+
                 </form>
             </div>
         </JoinWrapper>
