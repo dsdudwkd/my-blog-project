@@ -1,101 +1,82 @@
 import React, { useRef, useState } from 'react';
 import { addCategory } from '../api/firebase';
 import { styled } from 'styled-components';
+import CategoryList from '../components/CategoryList';
 
 function AddCategory(props) {
 
-    const [category, setCategory] = useState({
-        title: '',
-        sub: {
-            title: ''
-        }
-    });
+    const [category, setCategory] = useState([]);
+    const [newCategory, setNewCategory] = useState('');
 
-    const addMainCategory = (e) => {
-        const { name, value } = e.target;
-        setCategory((prevCategory) => ({
-            ...prevCategory,
-            [name]: value
-        }));
+    const addMainCategory = () => {
+        const newCategoryItem = {
+            name: newCategory,
+            subCategoryItem: []
+        };
+        setCategory([...category, newCategoryItem]);
+        setNewCategory('');
     }
-    const addSubCategory = (e) => {
-        const { name, value } = e.target;
-        setCategory((prevCategory) => ({
-            ...prevCategory,
-            sub: {
-                ...prevCategory.sub,
-                [name]: value
+
+    const addSubCategory = (categoryIndex, subCategoryName) => {
+        if (!subCategoryName) return;
+
+        setCategory(category.map((el, index) => {
+            if (index === categoryIndex) {
+                return {
+                    ...el,
+                    subCategoryItem: [...el.subCategoryItem, { name: subCategoryName }],
+                }
             }
+            return el;
         }));
     }
 
     const cancelAdd = () => {
-        const mainCategory = document.querySelector('form');
+        const mainCategory = document.querySelector('input');
         mainCategory.style.display = 'none';
     }
 
     const createMain = () => {
-        const createMainCategory = document.querySelector('form');
+        const createMainCategory = document.querySelector('input');
         createMainCategory.style.display = 'block';
     }
 
-    const onSubmit = async (event) => {
-        event.preventDefault();
-        try {
-            // 여기에서 Firebase에 데이터를 저장하도록 추가 작업이 필요합니다.
-            console.log(category);
+    const onSubmit = async (e) => {
+        e.preventDefault();
 
-            // Firebase에 데이터를 저장하는 코드 추가
+        try{
             await addCategory(category);
-            // 저장 후에 폼 초기화
-            setCategory({
-                title: '',
-                sub: {
-                    title: ''
-                }
-            });
-        } catch (error) {
+            setCategory([]);
+            setNewCategory('');
+        } catch(error){
             console.error(error);
         }
     }
 
+
     return (
-        <CategoryWrapper>
+        <>
             <button onClick={createMain} >카테고리 추가</button>
-            <form onSubmit={onSubmit}>
+            <form onSubmit={onSubmit} className='form' >
                 <div className='mainCategory addMain'>
                     <input
                         type="text"
                         name="title"
-                        placeholder='메인 카테고리 이름'
-                        value={category.title}
-                        onChange={addMainCategory}
+                        placeholder='메인 카테고리'
+                        onChange={(e) => setNewCategory(e.target.value)}
                     />
                 </div>
-                <div className='subCategory addSub'>
-                    <input
-                        type="text"
-                        name="title"
-                        value={category.sub.title}
-                        placeholder='서브 카테고리 이름'
-                        onChange={addSubCategory}
-                    />
-                </div>
-                {(category.title.length < 1) ? (<button type="submit" disabled>등록</button>) : (<button type="submit">등록</button>)}
-            </form>
+
                 <button onClick={cancelAdd} >취소</button>
-            <div>
-                
-                
-            </div>
-        </CategoryWrapper>
+                {(newCategory.length < 1) ? (<button type="submit" onClick={addMainCategory} disabled>등록</button>) : (<button type="submit" onClick={addMainCategory}>등록</button>)}
+            </form>
+
+                <CategoryList category={category} addSubCategory={addSubCategory} />
+
+
+        </>
     );
 }
 
 export default AddCategory;
 
-const CategoryWrapper = styled.div`
-    form{
-        display: none;
-    }
-`

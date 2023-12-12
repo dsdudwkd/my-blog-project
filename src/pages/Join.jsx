@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { sendEmail } from '../api/gmail';
 import { useNavigate } from 'react-router-dom';
-import { checkEmail, joinEmail } from '../api/firebase';
+import { logOut } from '../api/firebase';
+import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 
 function Join(props) {
     const [name, setName] = useState('');
@@ -13,6 +15,7 @@ function Join(props) {
 
     const [nameErr, setNameErr] = useState('');
     const [emailErr, setEmailErr] = useState('');
+    const [duplicatedErr, setDuplicatedErr] = useState('');
     const [pwErr, setPwErr] = useState('');
     const [isSameErr, setIsSameErr] = useState('');
 
@@ -24,38 +27,38 @@ function Join(props) {
     const handleJoin = async (event) => {
         event.preventDefault();
 
-        // Validate name
         if (name.trim() === '' || name.length <= 1) {
-            setNameErr('이름을 정확히 입력해주세요');
+            setNameErr('이름을 정확히 입력해주세요.');
             return;
         }
-
-        // Validate email
         if (!emailRegex.test(email)) {
-            setEmailErr('이메일 형식에 맞게 입력해주세요');
+            setEmailErr('이메일 형식에 맞게 입력해주세요.');
             return;
         }
-
-        // Validate password
         if (pw.length < 8 || !pwRegex.test(pw)) {
-            setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다');
+            setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
             return;
         }
-
-        // Validate password confirmation
         if (pw !== pw2) {
-            setIsSameErr('비밀번호가 일치하지 않습니다');
+            setIsSameErr('비밀번호가 일치하지 않습니다.');
             return;
         }
 
         try {
-            const user = await joinEmail(email, pw);
+            const auth = getAuth();
+            const userAccount = await createUserWithEmailAndPassword(auth, email, pw);
+            const user = userAccount.user;
+            await updateProfile(user, {
+                displayName: name
+            })
+            await logOut();
             navigate('/login');
         } catch (error) {
             console.error(error);
+            if (error instanceof FirebaseError) {
+                setDuplicatedErr('이미 사용하고 있는 이메일입니다.');
+            }
         }
-
-        // Reset errors
         setNameErr('');
         setEmailErr('');
         setPwErr('');
@@ -71,7 +74,7 @@ function Join(props) {
                     <div className='nameWrap wrap'>
                         <label htmlFor="yourName">이름</label>
                         <div>
-                            <input type="text" id='yourName' placeholder='이름을 입력하세요' value={name} onChange={(e) => { setName(e.target.value) }} onMouseLeave={checkEmail} />
+                            <input type="text" id='yourName' placeholder='이름을 입력하세요' value={name} onChange={(e) => { setName(e.target.value) }} />
 
                             {nameErr && <span>{nameErr}</span>}
                         </div>
@@ -80,6 +83,7 @@ function Join(props) {
                         <label htmlFor="email">이메일</label>
                         <div>
                             <input type="text" id='email' placeholder='이메일을 입력해주세요' value={email} onChange={(e) => { setEmail(e.target.value) }} />
+                            {<span>{duplicatedErr}</span>}
                             <button className='emailAuthBtn' onClick={sendEmail}>인증하기</button>
                             {emailErr && <span>{emailErr}</span>}
                         </div>

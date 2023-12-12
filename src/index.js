@@ -12,6 +12,8 @@ import Join from './pages/Join';
 import Search from './pages/Search';
 import { useAuthContext } from './context/AuthContext';
 import AddCategory from './pages/AddCategory';
+import { getAuth } from 'firebase/auth';
+import Profile from './pages/Profile';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -25,6 +27,16 @@ const AdminRoute = ({ checkAdmin, children }) => {
     return <Navigate to='/' replace />
   }
   return children;
+}
+
+//로그인하지 않은 상태면 로그인 페이지로 이동
+const ProtectedRoute = ({ children }) => {
+  const auth = getAuth();
+  const user = auth.currentUser;
+  if (user === null) {
+    return <Navigate to='/login' />
+  }
+  return children
 }
 
 const router = createBrowserRouter([
@@ -47,11 +59,18 @@ const router = createBrowserRouter([
       { path: '/login', element: <Login /> },
       { path: '/join', element: <Join /> },
       {
+        path: '/profile',
+        element:
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+      },
+      {
         path: '/editCategory',
         element:
-         <AdminRoute checkAdmin>
-          <AddCategory />
-        </AdminRoute>
+          <AdminRoute checkAdmin>
+            <AddCategory />
+          </AdminRoute>
       }
 
     ]

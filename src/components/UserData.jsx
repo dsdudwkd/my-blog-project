@@ -22,7 +22,7 @@ function UserData({ user: { photoURL, displayName } }) {
     return (
         <UserDataWrapper>
             <button id='userBtn'>
-                <img src={photoURL} alt={`${displayName}의 프로필 사진`} />
+                {/* <img src={photoURL} alt={`${displayName}의 프로필 사진`} /> */}
                 <span className='nickname'>{displayName}님</span>
             </button>
             

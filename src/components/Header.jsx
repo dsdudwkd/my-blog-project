@@ -5,6 +5,7 @@ import main_name from '../img/main_name.png';
 import styled from 'styled-components';
 import { useAuthContext } from '../context/AuthContext';
 import UserData from './UserData';
+import CategoryMenu from './CategoryMenu';
 
 function Header(props) {
 
@@ -33,25 +34,30 @@ function Header(props) {
                 <h1 >Annalog</h1>
             </Link >
 
-
+            <nav>
+                <CategoryMenu />
+            </nav>
             <div className='userWrapper'>
-            <Link to='/search'>SEARCH</Link>
+                <Link to='/search'>SEARCH</Link>
 
                 {user && user.isAdmin && (
                     <>
-                    <Link to='/newPost'>
-                        <button className='newPostBtn'>글쓰기</button>
-                    </Link>
-                    <Link to='editCategory'>
-                        <button>카테고리 편집</button>
-                    </Link>
+                        <Link to='/newPost'>
+                            <button className='newPostBtn'>글쓰기</button>
+                        </Link>
+                        <Link to='editCategory'>
+                            <button>카테고리 편집</button>
+                        </Link>
                     </>
-                    
+
                 )}
                 {user ?
                     (
                         <>
-                            {user && <UserData user={user} />}
+                            {user &&
+                                <Link to='/profile'>
+                                    <UserData user={user} />
+                                </Link>}
                             <button className='logOutBtn' onClick={userLogOut}>LOGOUT</button>
                         </>
                     ) :

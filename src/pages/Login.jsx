@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { googleLogIn, googleLogOut, loginEmail } from '../api/firebase';
+import { googleLogIn, loginEmail } from '../api/firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { FcGoogle } from "react-icons/fc";
 import styled from 'styled-components';
+import { AuthCredential, getAuth } from 'firebase/auth';
+import UserData from '../components/UserData';
 
 function Login(props) {
 
+    
     const [email, setEmail] = useState('');
     const [pw, setPw] = useState('');
     const [errMsg, setErrMsg] = useState('');
@@ -23,7 +26,7 @@ function Login(props) {
             if(user){
                 navigate('/');
             } else{
-                setErrMsg('이메일 혹은 비밀번호가 일치하지 않습니다')
+                setErrMsg('이메일 혹은 비밀번호가 일치하지 않습니다.');
             }
         } catch(error){
             console.error(error);
@@ -42,8 +45,8 @@ function Login(props) {
                         <input type="password" placeholder='비밀번호' className='pw' value={pw} 
                             onChange={(e) => {setPw(e.target.value)}}
                         />
+                    <p>{errMsg}</p>
                     </div>
-
                     <button type='submit' className='logInBtn'>로그인</button>
                     <button onClick={googleLogin} className='googleBtn'>
                         <FcGoogle className='googleSvg' />
@@ -93,6 +96,13 @@ const LogInWrapper = styled.div`
                     font-family: Noto Sans KR;
                 }
             }
+            p{
+                color: red;
+                font-size: 12px;
+                display: flex;
+                justify-content: flex-start;
+                margin-top: 10px;
+            }
             .logInBtn{
                 padding: 12px 24px;
                 font-size: 18px;
@@ -102,6 +112,7 @@ const LogInWrapper = styled.div`
                 background-color: #4c87bf;
                 border-radius: 10px;
             }
+            
         }
         button{
             border: none;
