@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { googleLogIn, logOut, onUserState } from '../api/firebase';
+import { googleLogIn, logOut, onUserState, gitHubLogin } from '../api/firebase';
 
 const AuthContext = createContext();
 
@@ -31,7 +31,7 @@ export function AuthContextProvider({children}) {
     },[])
 
     return (
-        <AuthContext.Provider value={{user, googleLogIn, logOut}}>
+        <AuthContext.Provider value={{user, googleLogIn, gitHubLogin, logOut}}>
             {children} {/* {children}은  모든 하위 컴포넌트*/}
         </AuthContext.Provider>
     );

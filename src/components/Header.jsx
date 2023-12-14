@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { googleLogIn, logOut, onUserState } from '../api/firebase';
 import main_name from '../img/main_name.png';
 import styled from 'styled-components';
@@ -10,6 +10,7 @@ import CategoryMenu from './CategoryMenu';
 function Header(props) {
 
     const [user, setUser] = useState('');
+    const navigate = useNavigate();
 
     useEffect(() => {
         onUserState((user) => {
@@ -26,6 +27,7 @@ function Header(props) {
     //로그아웃
     const userLogOut = () => {
         logOut().then(setUser);
+        navigate('/login');
     }
 
     return (

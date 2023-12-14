@@ -17,8 +17,9 @@ function Join(props) {
     const [emailErr, setEmailErr] = useState('');
     const [duplicatedErr, setDuplicatedErr] = useState('');
     const [pwErr, setPwErr] = useState('');
-    const [isSameErr, setIsSameErr] = useState('');
+    const [pwConfirmErr, setPwConfirmErr] = useState('');
 
+    const nameRegex = /^[가-힣a-zA-Z]+$/;
     const emailRegex = /^[a-zA-Z0-9+-\_.]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
     const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@!%*#?&])[A-Za-z\d@!%*#?&]{8,16}$/;
 
@@ -27,22 +28,24 @@ function Join(props) {
     const handleJoin = async (event) => {
         event.preventDefault();
 
-        if (name.trim() === '' || name.length <= 1) {
-            setNameErr('이름을 정확히 입력해주세요.');
-            return;
+        setNameErr('');
+        setEmailErr('');
+        setPwErr('');
+        setPwConfirmErr('');
+
+        if (name.trim() === '' || name.length <= 1 || !nameRegex.test(name)) {
+            setNameErr('이름을 정확히 입력해주세요');
         }
         if (!emailRegex.test(email)) {
             setEmailErr('이메일 형식에 맞게 입력해주세요.');
-            return;
         }
         if (pw.length < 8 || !pwRegex.test(pw)) {
             setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
-            return;
         }
-        if (pw !== pw2) {
-            setIsSameErr('비밀번호가 일치하지 않습니다.');
-            return;
+        if (pw2.length < 1) {
+            setPwConfirmErr('비밀번호를 입력하세요')
         }
+
 
         try {
             const auth = getAuth();
@@ -52,18 +55,18 @@ function Join(props) {
                 displayName: name
             })
             await logOut();
-            navigate('/login');
+            navigate('/');
         } catch (error) {
             console.error(error);
             if (error instanceof FirebaseError) {
-                setDuplicatedErr('이미 사용하고 있는 이메일입니다.');
+                if (error.code === 'auth/email-already-in-use') {
+                    setDuplicatedErr('이미 사용 중인 이메일입니다.')
+                }
             }
         }
-        setNameErr('');
-        setEmailErr('');
-        setPwErr('');
-        setIsSameErr('');
+        
     };
+   
 
 
     return (
@@ -74,7 +77,17 @@ function Join(props) {
                     <div className='nameWrap wrap'>
                         <label htmlFor="yourName">이름</label>
                         <div>
-                            <input type="text" id='yourName' placeholder='이름을 입력하세요' value={name} onChange={(e) => { setName(e.target.value) }} />
+                            <input type="text" id='yourName'
+                                placeholder='이름을 입력하세요'
+                                value={name}
+                                onChange={(e) => { setName(e.target.value) }}
+                                onBlur={() => {
+                                    if (name.trim() === '' || name.length <= 1 || !nameRegex.test(name)) {
+                                        setNameErr('이름을 정확히 입력해주세요.');
+                                        return
+                                    }
+                                }}
+                            />
 
                             {nameErr && <span>{nameErr}</span>}
                         </div>
@@ -82,10 +95,19 @@ function Join(props) {
                     <div className='emailWrap wrap'>
                         <label htmlFor="email">이메일</label>
                         <div>
-                            <input type="text" id='email' placeholder='이메일을 입력해주세요' value={email} onChange={(e) => { setEmail(e.target.value) }} />
-                            {<span>{duplicatedErr}</span>}
+                            <input type="text"
+                                id='email' placeholder='이메일을 입력해주세요'
+                                value={email}
+                                onChange={(e) => { setEmail(e.target.value) }}
+                                onBlur={() => {
+                                    if (!emailRegex.test(email)) {
+                                        setEmailErr('이메일 형식에 맞게 입력해주세요.');
+                                    }
+                                }}
+                            />
                             <button className='emailAuthBtn' onClick={sendEmail}>인증하기</button>
-                            {emailErr && <span>{emailErr}</span>}
+                            {duplicatedErr && <span>{duplicatedErr}</span> || emailErr && <span>{emailErr}</span>}
+                            { }
                         </div>
 
                     </div>
@@ -97,8 +119,20 @@ function Join(props) {
                     <div className='pwWrap wrap'>
                         <label htmlFor="password">비밀번호</label>
                         <div>
-                            <input type="password" id='password' placeholder='영문자,숫자,특수문자 포함 최소8~16자' value={pw}
-                                onChange={(e) => { setPw(e.target.value) }} minLength={8} maxLength={16} />
+                            <input type="password"
+                                id='password'
+                                placeholder='영문자,숫자,특수문자 포함 최소8~16자'
+                                value={pw}
+                                onChange={(e) => { setPw(e.target.value) }}
+                                onBlur={() => {
+                                    if (pw.length < 8 || !pwRegex.test(pw)) {
+                                        setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
+                                        return;
+                                    }
+                                }}
+                                minLength={8}
+                                maxLength={16}
+                            />
                             {pwErr && <span>{pwErr}</span>}
                         </div>
 
@@ -106,11 +140,26 @@ function Join(props) {
                     <div className='pwConfirmWrap wrap'>
                         <label htmlFor="passwordConfirm">비밀번호 확인</label>
                         <div>
-                            <input type="password" id='passwordConfirm' placeholder='비밀번호를 확인해주세요' value={pw2}
-                                onChange={(e) => { setPw2(e.target.value) }} minLength={8} maxLength={16} />
-                            {isSameErr && <span>{isSameErr}</span>}
-                        </div>
+                            <input type="password"
+                                id='passwordConfirm'
+                                placeholder='비밀번호를 확인해주세요'
+                                value={pw2}
+                                onChange={(e) => { setPw2(e.target.value) }}
+                                onBlur={() => {
+                                    // const pw = document.getElementById('password').value;
+                                    // const pw2 = document.getElementById('passwordConfirm').value;
+                                    if (pw !== pw2) {
+                                        setPwConfirmErr('비밀번호가 일치하지 않습니다.');
 
+                                    } else if (pw2.length < 1) {
+                                        setPwConfirmErr('비밀번호를 입력해주세요');
+                                        return
+                                    }
+                                }}
+                                minLength={8}
+                                maxLength={16} />
+                            {(pwConfirmErr && <span>{pwConfirmErr}</span>)}
+                        </div>
                     </div>
                     <button type='submit' className='joinBtn'>가입하기</button>
 
@@ -151,18 +200,22 @@ const JoinWrapper = styled.div`
                 input{
                     width: 400px;
                     height: 36px;
+                    border: none;
                     border-radius: 4px;
-                    border: 1px solid #999;
+                    border: 1px solid #d0d0d0;
                     padding: 4px 8px;
+                    background-color: transparent;
                 }
                 input::placeholder{
                     font-family: Noto Sans KR;
                     color: #999;
                 }
-                #email{
+                .emailWrap > div{
+                    display: flex;
+                    flex-direction: row;
                 }
                 .emailAuthBtn{
-                    width: 80px;
+                    /* width: 80px; */
                     height: 44px;
                     background-color: transparent;
                     color: #425867;

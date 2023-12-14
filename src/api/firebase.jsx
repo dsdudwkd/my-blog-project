@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
-import { GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
+import { GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { get, getDatabase, ref, remove, set, update } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
 import { v4 as uuid } from 'uuid'; //고유 식별자를 생성해주는 패키지
@@ -25,11 +25,13 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 //Google 소셜 로그인을 사용하기 위한 GoogleAuthProvider 객체를 생성 => 구글 로그인 수행 가능
 const googleAuthProvider = new GoogleAuthProvider();
+const githubAuthProvider = new GithubAuthProvider();
 const database = getDatabase(app);
 const analytics = getAnalytics(app);
 
 //GoogleAuthProvider를 사용할 때마다 구글 팝업을 항상 띄우기를 원한다는 의미 => 자동 로그인 현상 방지
 googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
+githubAuthProvider.setCustomParameters({ prompt: 'select_account'});
 
 //구글 로그인
 export async function googleLogIn() {
@@ -40,6 +42,20 @@ export async function googleLogIn() {
         const user = result.user;
         console.log(user);
         //사용자 정보 반환
+        return user;
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+//깃허브 로그인
+export async function gitHubLogin() {
+    try {
+
+        githubAuthProvider.addScope('repo');
+        const result = await signInWithPopup(auth, githubAuthProvider);
+        const user = result.user;
+        console.log(user);
         return user;
     } catch (error) {
         console.error(error);
@@ -98,7 +114,7 @@ export function onUserState(callback) {
 //     try {
 //         const userAccount = await createUserWithEmailAndPassword(auth, email, password);
 //         const user = userAccount.user;
-        
+
 //     } catch (error) {
 //         console.error(error);
 //     }
@@ -114,12 +130,16 @@ export async function loginEmail(email, password) {
     }
 }
 
-//중복 이메일 체크
-export async function checkEmail(email) {
-    // const database = getDatabase();
-    // const userRef = ref();
+// //비밀번호 재설정
+// export async function changePassword(){
+//     const auth = getAuth();
 
-}
+//     try{
+//         const sendEmail = await sendPasswordResetEmail(auth, )
+//     }catch(error){
+//         console.error(error);
+//     }
+// }
 
 //파이어베이스에 카테고리 연동
 export async function addCategory(category) {

@@ -14,6 +14,7 @@ import { useAuthContext } from './context/AuthContext';
 import AddCategory from './pages/AddCategory';
 import { getAuth } from 'firebase/auth';
 import Profile from './pages/Profile';
+import ResetPw from './pages/ResetPw';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -57,6 +58,7 @@ const router = createBrowserRouter([
       },
       { path: '/search', element: <Search /> },
       { path: '/login', element: <Login /> },
+      { path: '/resetPw', element: <ResetPw />},
       { path: '/join', element: <Join /> },
       {
         path: '/profile',
