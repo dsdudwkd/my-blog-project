@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useAuthContext } from '../context/AuthContext';
 import UserData from './UserData';
 import CategoryMenu from './CategoryMenu';
+import { IoSearch } from "react-icons/io5";
 
 function Header(props) {
 
@@ -40,16 +41,16 @@ function Header(props) {
                 <CategoryMenu />
             </nav>
             <div className='userWrapper'>
-                <Link to='/search'>SEARCH</Link>
+                <Link to='/search'>
+                    <IoSearch className='search' />
+                </Link>
 
                 {user && user.isAdmin && (
                     <>
                         <Link to='/newPost'>
                             <button className='newPostBtn'>글쓰기</button>
                         </Link>
-                        <Link to='editCategory'>
-                            <button>카테고리 편집</button>
-                        </Link>
+                        
                     </>
 
                 )}
@@ -60,12 +61,12 @@ function Header(props) {
                                 <Link to='/profile'>
                                     <UserData user={user} />
                                 </Link>}
-                            <button className='logOutBtn' onClick={userLogOut}>LOGOUT</button>
+                            <button className='logOutBtn' onClick={userLogOut}>로그아웃</button>
                         </>
                     ) :
                     (
                         <Link to='/login'>
-                            <button className='logInBtn'>LOGIN</button>
+                            <button className='logInBtn'>로그인</button>
                         </Link>
                     )}
 
@@ -84,6 +85,7 @@ const HeaderContainer = styled.header`
     gap: 24px;
     a{
         color: black;
+        font-family: monospace;
         h1{
             font-size: 50px;
             font-family: Ephesis;
@@ -94,16 +96,30 @@ const HeaderContainer = styled.header`
         display: flex;
         align-items: center;
         gap: 24px;
-        font-size: 16px;
-        font-family: Noto Sans KR, Arial, Helvetica, sans-serif;
+        svg{
+            width: 25px;
+            height: 25px;
+            color: #555;
+            padding: 6px;
+        }
         button{
             border: none;
             background-color: transparent;
-            padding: 6px 12px;
             font-size: 16px;
+            font-family: Noto Sans KR, Arial, Helvetica, sans-serif;
+            &.newPostBtn{
+                background-color: #333;
+                border-radius: 20px;
+                color: #fff;
+                padding: 8px 24px;
+            }
+            &:hover{
+                font-weight: 600;
+            }
         }
         
     }
 
     
 `
+

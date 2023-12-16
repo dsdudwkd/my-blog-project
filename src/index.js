@@ -12,9 +12,9 @@ import Join from './pages/Join';
 import Search from './pages/Search';
 import { useAuthContext } from './context/AuthContext';
 import AddCategory from './pages/AddCategory';
-import { getAuth } from 'firebase/auth';
 import Profile from './pages/Profile';
 import ResetPw from './pages/ResetPw';
+import { auth } from './api/firebase';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -32,7 +32,6 @@ const AdminRoute = ({ checkAdmin, children }) => {
 
 //로그인하지 않은 상태면 로그인 페이지로 이동
 const ProtectedRoute = ({ children }) => {
-  const auth = getAuth();
   const user = auth.currentUser;
   if (user === null) {
     return <Navigate to='/login' />

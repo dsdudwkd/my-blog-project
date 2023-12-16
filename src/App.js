@@ -1,9 +1,10 @@
 import './App.css';
 import Header from './components/Header';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Route, Routes } from 'react-router-dom';
 import GlobalStyle from './style/GlobalStyle';
 import { AuthContextProvider } from './context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import AllContent from './pages/AllContent';
 
 
 function App() {
@@ -13,9 +14,12 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthContextProvider>
-      <GlobalStyle />
-      <Header />
-      <Outlet />
+        <GlobalStyle />
+        <Header />
+        <Routes>
+          <Route path='/' element={<AllContent />} />
+        </Routes>
+        <Outlet />
       </AuthContextProvider>
     </QueryClientProvider>
   );
