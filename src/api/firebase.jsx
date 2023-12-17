@@ -4,6 +4,7 @@ import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import {getFirestore, setDoc} from "firebase/firestore"
+import { getStorage } from "firebase/storage"
 import { get, getDatabase, ref, remove, set, update } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
 import { v4 as uuid } from 'uuid'; //고유 식별자를 생성해주는 패키지
@@ -30,6 +31,7 @@ const githubAuthProvider = new GithubAuthProvider();
 const database = getDatabase(app);
 const analytics = getAnalytics(app);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 //GoogleAuthProvider를 사용할 때마다 구글 팝업을 항상 띄우기를 원한다는 의미 => 자동 로그인 현상 방지
 googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
