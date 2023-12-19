@@ -2,104 +2,94 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
-import { addDoc, collection, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { ref } from 'firebase/database';
-import { getDownloadURL, uploadBytes } from 'firebase/storage';
+import { getDownloadURL, uploadBytes} from 'firebase/storage';
+import DOMPurify from "isomorphic-dompurify"
 
-function NewPost() {
-    // const [quillValue, setQuillValue] = useState("");
+const NewPost = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [title, setTitle] = useState('');
     const [post, setPost] = useState('');
     const [file, setFile] = useState(null);
+    const [docRef, setDocRef] = useState(null);
+    const user = auth.currentUser;
     const quillRef = useRef(null);
 
 
     const writeTitle = (e) => {
         setTitle(e.target.value);
-    }
-    // const writePost = (e) => {
-    //     setPost(e.target.value);
-    // }
+    };
 
     const writePost = (content) => {
         setPost(content);
+        
     };
 
-    // const insertFile = (event) => {
-    //     const { files } = event.target;
-    // if (files && files[0]) { //파일이 존재하고 하나 이상의 파일을 선택했는지
-    //     setFile(files[0]);
-    // } 
-    // }
-
-    useEffect(()=>{
-        const insertImg = () => {
-            const input = document.createElement('input');
-            input.setAttribute("type", "file");
-            input.setAttribute("accept", "image/*");
-            input.click();
-            input.onchange = async () => {
-                const file = input.files[0];
-                const range = getEditor().getSelection(true);
-                getEditor().insertEmbed(range.index, "image", "images/loading.gif")
-                try {
-                    // 필자는 파이어 스토어에 저장하기 때문에 이런식으로 유틸함수를 따로 만들어줬다 
-                    // 이런식으로 서버에 업로드 한뒤 이미지 태그에 삽입할 url을 반환받도록 구현하면 된다 
-                    const filePath = `contents/temp/${Date.now()}`;
-                    const url = await uploadImage(file, filePath); 
-                    
-                    // 정상적으로 업로드 됐다면 로딩 placeholder 삭제
-                    getEditor().deleteText(range.index, 1);
-                    // 받아온 url을 이미지 태그에 삽입
-                    getEditor().insertEmbed(range.index, "image", url);
-                    
-                    // 사용자 편의를 위해 커서 이미지 오른쪽으로 이동
-                    getEditor().setSelection(range.index + 1);
-                  } catch (e) {
-                    getEditor().deleteText(range.index, 1);
-                  }
+    const imageHandler = (content) => {
+        const input = document.createElement("input");
+        input.setAttribute("type", "file");
+        input.setAttribute("accept", "image/*");
+        input.click();
+        input.addEventListener("change", async () => {
+            const editor = quillRef.current.getEditor();
+            const file = input.files[0];
+            const range = editor.getSelection(true);
+            try {
+                // 파일명을 "image/Date.now()"로 저장
+                const storageRef = ref(
+                    storage,
+                    `posts/${user.uid}-${user.displayName}/${doc.id}`
+                );
+                console.log(storageRef)
+                // Firebase Method : uploadBytes, getDownloadURL
+                await uploadBytes(storageRef, file).then((snapshot) => {
+                    getDownloadURL(snapshot.ref).then((url) => {
+                        // 이미지 URL 에디터에 삽입
+                        editor.insertEmbed(range.index, "image", url);
+                        // URL 삽입 후 커서를 이미지 뒷 칸으로 이동
+                        editor.setSelection(range.index + 1);
+                    });
+                });
+            } catch (error) {
+                console.log(error);
             }
-        }
-        if(quillRef.current){
-            const {getEditor} = quillRef.current;
-            const toolbar = quillRef.current.getEditor().getModule("toolbar");
-            
-        }
-    })
-
-    const onChange = (e) => {
-        writePost(e);
-    }
+        });
+    };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-
-        const user = auth.currentUser;
+        // const user = auth.currentUser;
 
         if (!user || isLoading || title === '' || post === '') return;
         try {
             setIsLoading(true);
+            
 
-            const doc = await addDoc(collection(db, 'posts'), {
+            const newDocRef = await addDoc(collection(db, 'posts'), {
                 title,
                 post,
                 createdAt: Date.now(),
                 userId: user.uid
-            })
-            //파일이 있다면(파일 첨부했다면)
-            if (file) {
-                //user가 업로드한 파일 storage의 폴더(document)생성
-                const locationRef = ref(storage, `posts/${user.uid}-${user.displayName}/${doc.id}`)
-                //위의 경로에 파일을 넣는다
-                const result = await uploadBytes(locationRef, file);
-                const url = getDownloadURL(result.ref);
-                await updateDoc(doc, {
-                    photo: url
-                })
-            }
+            });
+
+            setDocRef(newDocRef);
+
+            // if (file) {
+            //     const editor = quillRef.current.getEditor();
+            //     const range = editor.getSelection(true);
+            //     const locationRef = ref(storage, `posts/${user.uid}-${user.displayName}/${doc.id}`);
+            //     const result = await uploadBytes(locationRef, file);
+            //     const url = await getDownloadURL(result.ref);
+
+            //     await updateDoc(doc, {
+            //         photo: url
+            //     });
+            // }
+            imageHandler()
+            console.log(post);
             setPost('');
             setTitle('');
             setFile(null);
@@ -134,37 +124,30 @@ function NewPost() {
                             onChange={writeTitle}
                         />
                     </div>
-                    {/* <div className='postContainer'>
-                        <textarea
-                            name="main"
-                            id="write-post"
+
+                    <div>
+                        <ReactQuill
+                            ref={quillRef}
+                            style={{ height: "600px" }}
+                            theme="snow"
+                            modules={modules}
+                            formats={formats}
+                            preserveWhitespace
                             value={post}
                             onChange={writePost}
                         />
-                    </div> */}
-
-                    <ReactQuill
-                    ref={quillRef}
-                        style={{ height: "600px" }}
-                        theme="snow"
-                        modules={{
-                            ...modules,
-                            imageResize: {
-                                parchment:Quill.import("parchment"),
-                                modules: ["Resize", "DisplaySize", "Toolbar"],
-                            },
+                    </div>
+                    {/* <div
+                        className="view ql-editor" // react-quill css
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(post),
                         }}
-                        formats={formats}
-                        preserveWhitespace
-                        value={post}
-                        onChange={onChange}
-                     />
+                    /> */}
 
                     <button type='submit' className='submitBtn'>
                         {isLoading ? '업로드 중..' : '완료'}
                     </button>
                 </form>
-
             </div>
         </PostWrapper>
 

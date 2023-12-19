@@ -15,10 +15,6 @@ export const modules = {
         ["blockquote", "code-block"],
         ["clean"],
     ],
-    imageResize: [
-        [{parchment : Quill.import("parchment")}],
-        [{modules: ["Resize", "DisplaySize", "Toolbar"]}]
-    ]
 };
 export const formats = [
     "font",

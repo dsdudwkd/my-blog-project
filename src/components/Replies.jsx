@@ -44,11 +44,11 @@ function Replies(props) {
 
 
     return (
-        <ReplyWrapper>
+        <ReplyWrapper className='container'>
             <div className='replyTitle'>댓글</div>
             <form onSubmit={onSubmit}>
                 <div className='replyArea'>
-                    {/* <img src={auth.currentUser} alt={auth.currentUser.displayName} /> */}
+                    {/* <img src={auth.currentUser.photoURL} alt={auth.currentUser.displayName} /> */}
                     <div>
                         {/* <span>{auth.currentUser.displayName}</span> */}
                         <input
