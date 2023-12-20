@@ -7,7 +7,7 @@ export function AuthContextProvider({children}) {
 
     const [user, setUser] = useState(); //user에 대한 정보를 받을 상태 변수
     const [unSubscribe, setUnSubscribe] = useState(); //컴포넌트가 마운트 해제될 때 상태값에 인증상태를 저장, 로그인 인증 상태
-
+    const [isLoading, setIsLoading] = useState(true);
     //페이지를 마운트할 때마다 로그인 정보 업데이트
     /* 
     컴포넌트가 마운트되면 useEffect가 실행
@@ -15,8 +15,27 @@ export function AuthContextProvider({children}) {
     다른 컴포넌트가 마운트 해제되거나 혹은 다른 효과로 인해서 다시 실행
     */
     useEffect(()=>{
+
+        /*추가 */
+        const storeUser = sessionStorage.getItem('user');
+        if(storeUser){
+            setUser(JSON.parse(storeUser))
+        }
+        /*------------------------- */
+
         const userChange = (newUser) => {
             setUser(newUser); //새로운 사용자 데이터로 상태를 업데이트
+            setIsLoading(false)
+
+            /*추가*/
+            if(newUser){
+                sessionStorage.setItem('user',JSON.stringify(newUser))
+                //사용자가 로그인하면 세션 스토리에 정보를 저장
+            }else{
+                sessionStorage.removeItem('user');
+                //사용자가 로그아웃아면 세션 스토리에 있는 정보를 삭제
+            }
+            /*------------------------- */
         }
 
         //위에서 새로 업데이트된 사용자를 onUserState로 넘김
@@ -31,7 +50,7 @@ export function AuthContextProvider({children}) {
     },[])
 
     return (
-        <AuthContext.Provider value={{user, googleLogIn, gitHubLogin, logOut}}>
+        <AuthContext.Provider value={{user, googleLogIn, gitHubLogin, logOut, isLoading}}>
             {children} {/* {children}은  모든 하위 컴포넌트*/}
         </AuthContext.Provider>
     );

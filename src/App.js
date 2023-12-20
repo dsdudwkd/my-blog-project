@@ -16,9 +16,9 @@ function App() {
       <AuthContextProvider>
         <GlobalStyle />
         <Header />
-        <Routes>
-          <Route path='/' element={<AllContent />} />
-        </Routes>
+          <Routes>
+            <Route path='/' element={<AllContent />} />
+          </Routes>
         <Outlet />
       </AuthContextProvider>
     </QueryClientProvider>

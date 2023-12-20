@@ -21,7 +21,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 //관리자 인증
 //관리자가 아닌 유저가 관리자 권한이 필요한 페이지에 접근했을 경우 처리하기 위한 컴포넌트 생성
 const AdminRoute = ({ checkAdmin, children }) => {
-  const { user } = useAuthContext();
+  const { user, isLoading } = useAuthContext();
+
+  if(isLoading){
+    return 
+  }
 
   //현재 로그인한 사용자가 어드민이 아니거나 로그인하지 않은 경우 홈 화면으로 이동
   if (!user || (checkAdmin && !user.isAdmin)) {

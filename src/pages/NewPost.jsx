@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ReactQuill, { Quill } from "react-quill";
+import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { ref } from 'firebase/database';
-import { getDownloadURL, uploadBytes} from 'firebase/storage';
+import { getDownloadURL, uploadBytes, ref as storageRef } from 'firebase/storage';
 import DOMPurify from "isomorphic-dompurify"
+
 
 const NewPost = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -25,10 +26,17 @@ const NewPost = () => {
 
     const writePost = (content) => {
         setPost(content);
-        
+
     };
 
-    const imageHandler = (content) => {
+    useEffect(()=>{
+        const editor = quillRef.current.getEditor();
+        editor.getModule('toolbar').addHandler('image',()=>{
+            imageHandler();
+        })
+    },[])
+
+    const imageHandler = async (content) => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
         input.setAttribute("accept", "image/*");
@@ -38,21 +46,18 @@ const NewPost = () => {
             const file = input.files[0];
             const range = editor.getSelection(true);
             try {
-                // 파일명을 "image/Date.now()"로 저장
-                const storageRef = ref(
-                    storage,
-                    `posts/${user.uid}-${user.displayName}/${doc.id}`
-                );
-                console.log(storageRef)
-                // Firebase Method : uploadBytes, getDownloadURL
-                await uploadBytes(storageRef, file).then((snapshot) => {
-                    getDownloadURL(snapshot.ref).then((url) => {
-                        // 이미지 URL 에디터에 삽입
-                        editor.insertEmbed(range.index, "image", url);
-                        // URL 삽입 후 커서를 이미지 뒷 칸으로 이동
-                        editor.setSelection(range.index + 1);
-                    });
-                });
+                const fileName = `${user.uid}-${file.name}`;
+                const storagePath = `post/${user.uid}-${user.displayName}/${file.name}`;
+                const fileRef = storageRef(storage, storagePath);
+                console.log(fileName)
+                console.log(storagePath)
+                console.log(fileRef);
+
+                const snapshot = await uploadBytes(fileRef,file);
+                const url = await getDownloadURL(snapshot.ref)
+
+                editor.insertEmbed(range.index, "image", url);
+                editor.setSelection(range.index + 1);
             } catch (error) {
                 console.log(error);
             }
@@ -66,7 +71,7 @@ const NewPost = () => {
         if (!user || isLoading || title === '' || post === '') return;
         try {
             setIsLoading(true);
-            
+
 
             const newDocRef = await addDoc(collection(db, 'posts'), {
                 title,
@@ -76,19 +81,6 @@ const NewPost = () => {
             });
 
             setDocRef(newDocRef);
-
-            // if (file) {
-            //     const editor = quillRef.current.getEditor();
-            //     const range = editor.getSelection(true);
-            //     const locationRef = ref(storage, `posts/${user.uid}-${user.displayName}/${doc.id}`);
-            //     const result = await uploadBytes(locationRef, file);
-            //     const url = await getDownloadURL(result.ref);
-
-            //     await updateDoc(doc, {
-            //         photo: url
-            //     });
-            // }
-            imageHandler()
             console.log(post);
             setPost('');
             setTitle('');
