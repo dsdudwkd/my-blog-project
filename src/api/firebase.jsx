@@ -3,7 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
-import {getFirestore, setDoc} from "firebase/firestore"
+import { Firestore, Query, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 import { get, getDatabase, ref, remove, set, update } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
@@ -35,7 +35,7 @@ export const storage = getStorage(app);
 
 //GoogleAuthProvider를 사용할 때마다 구글 팝업을 항상 띄우기를 원한다는 의미 => 자동 로그인 현상 방지
 googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
-githubAuthProvider.setCustomParameters({ prompt: 'select_account'});
+githubAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
 //구글 로그인
 export async function googleLogIn() {
@@ -55,7 +55,6 @@ export async function googleLogIn() {
 //깃허브 로그인
 export async function gitHubLogin() {
     try {
-
         githubAuthProvider.addScope('repo');
         const result = await signInWithPopup(auth, githubAuthProvider);
         const user = result.user;
@@ -164,10 +163,6 @@ export async function getCategories() {
         }
     })
 }
-
-
-
-
 
 
 export default firebase;

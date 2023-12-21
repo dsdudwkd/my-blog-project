@@ -2,15 +2,27 @@ import React from 'react';
 import Replies from '../components/Replies';
 import { ref } from 'firebase/database';
 import { getDoc } from 'firebase/firestore';
+import styled from 'styled-components';
+import PostList from '../components/PostList';
 
 function AllContent(props) {
 
+    
+
     return (
-        <div>
-            
-            {/* <Replies /> */}
-        </div>
+        <ContentWrapper>
+            <div className='container'>
+
+                <PostList />
+            </div>
+        </ContentWrapper>
     );
 }
 
 export default AllContent;
+
+const ContentWrapper = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+`

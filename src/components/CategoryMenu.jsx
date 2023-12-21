@@ -16,7 +16,7 @@ function CategoryMenu(props) {
     }
 
     const setCategoryArr = [...setCategory];
-    console.log(setCategoryArr);
+    // console.log(setCategoryArr);
     return (
         <CategoryItemList>
             {setCategoryArr && setCategoryArr.map((category, index)=>(

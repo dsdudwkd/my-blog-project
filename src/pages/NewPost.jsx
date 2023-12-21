@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
-import ReactQuill from "react-quill";
+import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
 import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
-import { ref } from 'firebase/database';
-import { getDownloadURL, uploadBytes, ref as storageRef } from 'firebase/storage';
-import DOMPurify from "isomorphic-dompurify"
+import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
+import { FaPlus } from "react-icons/fa";
+import {DOMPurify} from 'dompurify';
+
 
 
 const NewPost = () => {
@@ -15,6 +16,7 @@ const NewPost = () => {
     const [title, setTitle] = useState('');
     const [post, setPost] = useState('');
     const [file, setFile] = useState(null);
+    const [previewURL, setPreviewURL] = useState(null);
     const [docRef, setDocRef] = useState(null);
     const user = auth.currentUser;
     const quillRef = useRef(null);
@@ -29,12 +31,12 @@ const NewPost = () => {
 
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         const editor = quillRef.current.getEditor();
-        editor.getModule('toolbar').addHandler('image',()=>{
+        editor.getModule('toolbar').addHandler('image', () => {
             imageHandler();
         })
-    },[])
+    }, [])
 
     const imageHandler = async (content) => {
         const input = document.createElement("input");
@@ -53,35 +55,72 @@ const NewPost = () => {
                 console.log(storagePath)
                 console.log(fileRef);
 
-                const snapshot = await uploadBytes(fileRef,file);
+                const snapshot = await uploadBytes(fileRef, file);
                 const url = await getDownloadURL(snapshot.ref)
 
                 editor.insertEmbed(range.index, "image", url);
                 editor.setSelection(range.index + 1);
+
+                const fileSize = file.size;
+                const maxSize = 20 * 1024 * 1024;
+
+                if (fileSize > maxSize) {
+                    alert("업로드 가능한 최대 이미지 용량은 20MB입니다.");
+                    return;
+                }
             } catch (error) {
                 console.log(error);
             }
         });
+    };
+    const onFileChange = (e) => {
+        const { files } = e.target;
+        if (files && files.length === 1) {
+            setFile(files[0]);
+            const reader = new FileReader();
+
+            reader.onload = () => {
+                setPreviewURL(reader.result);
+            }
+            if (file) { //[error] Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'.에러 처리
+                reader.readAsDataURL(files)
+
+            }
+        }
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
         // const user = auth.currentUser;
 
-        if (!user || isLoading || title === '' || post === '') return;
+        if (!user || isLoading) return;
+        if (title.trim() === "") {
+            alert('제목을 입력해주세요.');
+            return;
+        } else if (post.trim() === "") {
+            alert("본문을 입력해주세요.");
+            return;
+        }
         try {
             setIsLoading(true);
-
-
             const newDocRef = await addDoc(collection(db, 'posts'), {
                 title,
                 post,
                 createdAt: Date.now(),
-                userId: user.uid
+                userId: user.uid,
+                userName: user.displayName || "익명"
             });
+            if (file) {
+                const locationRef = ref(storage, `post/${user.uid}-mainImg/${newDocRef.id}`)
+                const snapShot = await uploadBytes(locationRef, file);
+                const url = await getDownloadURL(snapShot.ref);
+
+                updateDoc(newDocRef, {
+                    photoURL: url
+                })
+            }
 
             setDocRef(newDocRef);
-            console.log(post);
             setPost('');
             setTitle('');
             setFile(null);
@@ -115,6 +154,24 @@ const NewPost = () => {
                             value={title}
                             onChange={writeTitle}
                         />
+                        <div>
+                            <label htmlFor="representitiveImg">
+
+                                {file ?
+                                    <>
+                                        <img src={URL.createObjectURL(file)} alt="이미지 미리보기" value="다시 선택" style={{ width: '100px', height: '100px', padding: '0', marginBottom: '5px' }} />
+                                        (이미지 미리보기)
+                                    </>
+                                    :
+                                    <>
+                                        <FaPlus style={{ marginBottom: '10px' }} />
+                                        대표 사진 추가
+                                    </>
+                                }
+                            </label>
+                            <input type="file" id='representitiveImg' accept='image/*' onChange={onFileChange} style={{ display: 'none' }} />
+                        </div>
+
                     </div>
 
                     <div>
@@ -128,13 +185,9 @@ const NewPost = () => {
                             value={post}
                             onChange={writePost}
                         />
+
                     </div>
-                    {/* <div
-                        className="view ql-editor" // react-quill css
-                        dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(post),
-                        }}
-                    /> */}
+
 
                     <button type='submit' className='submitBtn'>
                         {isLoading ? '업로드 중..' : '완료'}
@@ -149,9 +202,7 @@ const NewPost = () => {
 export default NewPost;
 
 const PostWrapper = styled.div`
-    /* overflow-y: scroll; */
     .container{
-        
         padding: 40px 0;
         form{
             display: flex;
@@ -159,21 +210,40 @@ const PostWrapper = styled.div`
             gap: 20px;
             width: 1080px;
             margin: 0 auto;
-            textarea{
-                width: 100%;
-                border: none;
-                resize: none;
-                &#post-title{
-                    width: 100%;
-                    height: 42px;
-                    font-size: 30px;
-                    padding: 20px 0;
-                    border-bottom: 1px solid #e4e3e3;
+            .postTitle{
+                display: flex;
+                justify-content: space-around;
+                align-items: center;
+                text-align: center;
+                label{
+                    width: max-content;
+                    padding: 20px;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    font-size: 14px;
+                    font-family: Noto Sans KR;
+                    color: #888;
+                    cursor: pointer;
                 }
-                &#write-post{
-                    height: 500px;
+                textarea{
+                    width: 100%;
+                    border: none;
+                    resize: none;
+                    &#post-title{
+                        width: 100%;
+                        height: 42px;
+                        font-size: 30px;
+                        padding: 20px 0;
+                        border-bottom: 1px solid #e4e3e3;
+                    }
+                    &#write-post{
+                        height: 500px;
+                    }
                 }
             }
+            
             .submitBtn{
                 margin: 80px auto 0;
                 padding: 8px 24px;
