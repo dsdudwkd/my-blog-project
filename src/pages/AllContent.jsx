@@ -13,7 +13,7 @@ function AllContent(props) {
         <ContentWrapper>
             <div className='container'>
 
-                <PostList />
+                <PostList posts={props} />
             </div>
         </ContentWrapper>
     );

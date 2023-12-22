@@ -1,13 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function Post({posts} ) {
+function Post({posts : {title, post, createdAt}} ) {
     return (
         <PostWrapper>
            
-                <p>{posts.title}</p>
-                <p>{posts.post}</p>
-                <p>{posts.createdAt}</p>
+                <p>{title}</p>
+                <p>{post}</p>
+                <p>{createdAt}</p>
                 
             
         </PostWrapper>

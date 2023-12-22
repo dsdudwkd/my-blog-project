@@ -3,7 +3,7 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import { GithubAuthProvider, GoogleAuthProvider, createUserWithEmailAndPassword, getAuth, onAuthStateChanged, sendEmailVerification, sendPasswordResetEmail, sendSignInLinkToEmail, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
-import { Firestore, Query, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"
+import { Firestore, Query, addDoc, collection, doc, getDoc, getDocs, getFirestore, onSnapshot, orderBy, query, setDoc } from "firebase/firestore"
 import { getStorage } from "firebase/storage"
 import { get, getDatabase, ref, remove, set, update } from 'firebase/database';
 import { getAnalytics } from "firebase/analytics";
@@ -145,12 +145,12 @@ export async function loginEmail(email, password) {
 // }
 
 //파이어베이스에 카테고리 연동
-export async function addCategory(category) {
+export async function addCategory(category,subcategory) {
     const id = uuid();
-    return set(ref(database, `/category/${id}`), {
-        ...category
-    })
-
+    return await addDoc(collection(db, 'categories'), {
+        mainCategory: category,
+        subCategories: []
+    });
 }
 
 //연동된 카테고리 가져오기

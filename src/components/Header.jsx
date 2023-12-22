@@ -38,7 +38,7 @@ function Header(props) {
             </Link >
 
             <nav>
-                <CategoryMenu />
+                {/* <CategoryMenu /> */}
             </nav>
             <div className='userWrapper'>
                 <Link to='/search'>

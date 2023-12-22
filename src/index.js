@@ -23,8 +23,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 const AdminRoute = ({ checkAdmin, children }) => {
   const { user, isLoading } = useAuthContext();
 
-  if(isLoading){
-    return 
+  if (isLoading) {
+    return
   }
 
   //현재 로그인한 사용자가 어드민이 아니거나 로그인하지 않은 경우 홈 화면으로 이동
@@ -61,7 +61,7 @@ const router = createBrowserRouter([
       },
       { path: '/search', element: <Search /> },
       { path: '/login', element: <Login /> },
-      { path: '/resetPw', element: <ResetPw />},
+      { path: '/resetPw', element: <ResetPw /> },
       { path: '/join', element: <Join /> },
       {
         path: '/profile',
@@ -84,9 +84,9 @@ const router = createBrowserRouter([
 ])
 
 root.render(
-  // <React.StrictMode>
+  <React.StrictMode>
     <RouterProvider router={router} />
-  // </React.StrictMode>
+  </React.StrictMode>
 );
 
 reportWebVitals();
