@@ -5,6 +5,9 @@ import GlobalStyle from './style/GlobalStyle';
 import { AuthContextProvider } from './context/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AllContent from './pages/AllContent';
+import TopBtn from './components/TopBtn';
+import Footer from './components/Footer';
+import SideBar from './components/SideBar';
 
 
 function App() {
@@ -16,10 +19,12 @@ function App() {
       <AuthContextProvider>
         <GlobalStyle />
         <Header />
-          <Routes>
-            <Route path='/' element={<AllContent />} />
-          </Routes>
+        <Routes>
+          <Route path='/' element={<AllContent />} />
+        </Routes>
         <Outlet />
+        <TopBtn />
+        <Footer />
       </AuthContextProvider>
     </QueryClientProvider>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-function Post({posts : {title, post, createdAt}} ) {
+function Post({post : {title, post, createdAt}} ) {
     return (
         <PostWrapper>
            

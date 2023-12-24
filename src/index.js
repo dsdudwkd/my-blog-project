@@ -15,6 +15,7 @@ import AddCategory from './pages/AddCategory';
 import Profile from './pages/Profile';
 import ResetPw from './pages/ResetPw';
 import { auth } from './api/firebase';
+import PostDetails from './pages/PostDetails';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -49,7 +50,6 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <NotFound />,
     children: [
-      { path: '/all', element: <AllContent /> },
       {
         path: '/newPost',
         element:
@@ -76,7 +76,8 @@ const router = createBrowserRouter([
           <AdminRoute checkAdmin>
             <AddCategory />
           </AdminRoute>
-      }
+      },
+      { path: '/products/detail/:id', element: <PostDetails /> },
 
     ]
   }

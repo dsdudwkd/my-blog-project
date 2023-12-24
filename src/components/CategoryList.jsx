@@ -1,17 +1,10 @@
 import React from 'react';
 import ShowCategory from './ShowCategory';
 
-function CategoryList({ category, addSubCategory }) {
+function CategoryList() {
     return (
         <ul>
-            {category.map((el, index) => (
-                <ShowCategory
-                    key={index}
-                    category={el}
-                    categoryIndex={index}
-                    addSubCategory={addSubCategory}
-                />
-            ))}
+            카테고리 리스트
         </ul>
     );
 }

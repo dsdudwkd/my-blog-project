@@ -22,6 +22,7 @@ const NewPost = () => {
     const quillRef = useRef(null);
 
 
+
     const writeTitle = (e) => {
         setTitle(e.target.value);
     };
@@ -103,15 +104,16 @@ const NewPost = () => {
         }
         try {
             setIsLoading(true);
+            const kr_time = 1000 * 60 * 60 * 9;
             const newDocRef = await addDoc(collection(db, 'posts'), {
                 title,
                 post,
-                createdAt: Date.now(),
+                createdAt: new Date((new Date()).getTime() + kr_time).toISOString().replace('T', ' ').substring(0,16),
                 userId: user.uid,
                 userName: user.displayName || "익명"
             });
             if (file) {
-                const locationRef = ref(storage, `post/${user.uid}-mainImg/${newDocRef.id}`)
+                const locationRef = ref(storage, `post/${user.uid}/${newDocRef.id}`)
                 const snapShot = await uploadBytes(locationRef, file);
                 const url = await getDownloadURL(snapShot.ref);
 

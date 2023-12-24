@@ -13,7 +13,7 @@ function AllContent(props) {
         <ContentWrapper>
             <div className='container'>
 
-                <PostList posts={props} />
+                <PostList/>
             </div>
         </ContentWrapper>
     );
@@ -22,7 +22,4 @@ function AllContent(props) {
 export default AllContent;
 
 const ContentWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 50px;
 `

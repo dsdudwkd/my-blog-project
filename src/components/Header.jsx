@@ -81,8 +81,9 @@ const HeaderContainer = styled.header`
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px;
+    padding: 24px 12px;
     gap: 24px;
+    border-bottom: 1px solid #e6e6e6;
     a{
         color: black;
         font-family: monospace;

@@ -145,11 +145,10 @@ export async function loginEmail(email, password) {
 // }
 
 //파이어베이스에 카테고리 연동
-export async function addCategory(category,subcategory) {
+export async function addCategory(category) {
     const id = uuid();
     return await addDoc(collection(db, 'categories'), {
         mainCategory: category,
-        subCategories: []
     });
 }
 

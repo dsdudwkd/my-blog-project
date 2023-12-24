@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { addCategory } from '../api/firebase';
 import { styled } from 'styled-components';
 import CategoryList from '../components/CategoryList';
+import { FaPlus } from "react-icons/fa";
 
 function AddCategory(props) {
 
@@ -32,7 +33,7 @@ function AddCategory(props) {
     }
 
     const cancelAdd = () => {
-        const mainCategory = document.querySelector('input');
+        const mainCategory = document.querySelector('.addMain');
         mainCategory.style.display = 'none';
     }
 
@@ -56,8 +57,12 @@ function AddCategory(props) {
 
     return (
         <CategoryWrapper className='container'>
-            <AddButton onClick={createMain} >카테고리 추가</AddButton>
-            <form onSubmit={onSubmit} className='form' >
+            <Title>카테고리 관리</Title>
+            <AddButton onClick={createMain} >
+                카테고리 추가
+                <FaPlus />
+            </AddButton>
+            <Form onSubmit={onSubmit} className='form' >
                 <div className='mainCategory addMain' style={{ display: 'none' }}>
                     <input
                         type="text"
@@ -65,10 +70,12 @@ function AddCategory(props) {
                         placeholder='메인 카테고리'
                         onChange={(e) => setNewCategory(e.target.value)}
                     />
-                    <button onClick={cancelAdd} >취소</button>
-                    <button type="submit" disabled={newCategory.length < 1} onClick={addMainCategory}>등록</button>
+                    <div className='buttons'>
+                        <button onClick={cancelAdd} >취소</button>
+                        <button type="submit" disabled={newCategory.length < 1} onClick={addMainCategory} >등록</button>
+                    </div>
                 </div>
-            </form>
+            </Form>
             <CategoryList category={category} addSubCategory={addSubCategory} />
         </CategoryWrapper>
     );
@@ -81,11 +88,40 @@ const CategoryWrapper = styled.div`
     flex-direction: column;
     border: 1px solid black;
     border-radius: 15px;
-    padding: 20px;
+    padding: 40px;
     height: 600px;
 `
 
-const AddButton = styled.button`
-    border: none;
+const Title = styled.h1`
+    font-size: 30px;
+    padding: 10px;
+    margin-bottom: 50px;
 `
 
+const AddButton = styled.button`
+    border: 1px solid #999;
+    border-radius: 10px;
+    width: 600px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    background-color: #fff;
+    color: #555;
+`
+const Form = styled.form`
+    margin: 0 auto;
+    width: 600px;
+    .mainCategory{
+        width: 100%;
+        input{
+            padding: 10px 20px;
+        }
+        .buttons{
+            display: inline-block;
+        }
+    }
+`
