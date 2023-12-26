@@ -1,46 +1,46 @@
-// import React from 'react';
-// import {useQuery} from '@tanstack/react-query';
-// import { getCategories } from '../api/firebase';
-// import { Link } from 'react-router-dom';
-// import styled from 'styled-components';
+import React from 'react';
+import {useQuery} from '@tanstack/react-query';
+import { getCategories } from '../api/firebase';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
 
-// function CategoryMenu(props) {
+function CategoryMenu(props) {
 
-//     const {data : categories} = useQuery(['categories'], getCategories)
-//     const setCategory = new Set();
+    const {data : categories} = useQuery(['categories'], getCategories)
+    const setCategory = new Set();
 
-//     if(categories){
-//         categories.forEach((categoryObj)=>{
-//             setCategory.add(categoryObj.title);
-//         })
-//     }
+    if(categories){
+        categories.forEach((categoryObj)=>{
+            setCategory.add(categoryObj.title);
+        })
+    }
 
-//     const setCategoryArr = [...setCategory];
-//     // console.log(setCategoryArr);
-//     return (
-//         <CategoryItemList>
-//             {setCategoryArr && setCategoryArr.map((category, index)=>(
-//                 <CategoryItem key={index}>
-//                     <Link to={`/category/${category}`}>
-//                         {category}
-//                     </Link>
-//                 </CategoryItem>
-//             ))}
+    const setCategoryArr = [...setCategory];
+    // console.log(setCategoryArr);
+    return (
+        <CategoryItemList>
+            {setCategoryArr && setCategoryArr.map((category, index)=>(
+                <CategoryItem key={index}>
+                    <Link to={`/category/${category}`}>
+                        {category}
+                    </Link>
+                </CategoryItem>
+            ))}
 
-//         </CategoryItemList>
-//     );
-// }
+        </CategoryItemList>
+    );
+}
 
-// export default CategoryMenu;
+export default CategoryMenu;
 
-// const CategoryItemList = styled.ul`
-//     display: flex;
-//     gap: 20px;
-//     padding: 24px;
-// `
+const CategoryItemList = styled.ul`
+    display: flex;
+    gap: 20px;
+    padding: 24px;
+`
 
-// const CategoryItem = styled.li`
-//     a{
-//         color: black;
-//     }
-// `
+const CategoryItem = styled.li`
+    a{
+        color: black;
+    }
+`

@@ -1,15 +1,9 @@
 import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import PostItem from './Post';
-import { db, getPosts } from '../api/firebase';
+import { db } from '../api/firebase';
 import DOMPurify from 'dompurify';
-import Post from './Post';
 import styled from 'styled-components';
-import CategoryList from './CategoryList';
 import SideBar from './SideBar';
-import PostDetails from '../pages/PostDetails';
-import DetailPageEvent from './DetailPageEvent';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -43,28 +37,25 @@ function PostList(props) {
         fetchPosts();
     }, []);
 
-    const details = () => {
-        navigate(`products/detail/${posts.id}`, {
-            state: {
-                id: posts.id,
-                title: posts.title,
-                post: posts.post,
-                photoURL: posts.photoURL,
-                createdAt: posts.createdAt,
-            }
-        })
+    const details = (postId) => {
+        const post = posts.find((p) => p.id === postId);
+
+        if(post){
+            navigate(`products/detail/${post.id}`, {
+                state: {...post}
+            })
+        }
     }
 
     return (
         <PostWrapper className='container'>
-            {/* {JSON.stringify(posts)}; */}
             <SideBar />
 
             <Content>
-                {posts.slice(0, 8).map((post) => ( //최대 8개까지만 보이고, 글이 개별적으로 보이게
-                    <ContentList key={post.id} onClick={details}>
-                        <Title dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }} />
-                        <Datails dangerouslySetInnerHTML={{
+                {posts.map((post) => ( //최대 8개까지만 보이고, 글이 개별적으로 보이게
+                    <ContentList key={post.id} onClick={()=>{details(post.id)}}>
+                        <Title className='title' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }} />
+                        <Datails  dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(post.post,
                                 {
                                     ALLOWED_TAGS: ['p', 'em', 'span'] //p, em, span 태그만 보이게
@@ -82,6 +73,7 @@ export default PostList;
 
 const PostWrapper = styled.div`
     width: 1080px;
+    min-height: 1280px;
     overflow: hidden;
 `
 
@@ -93,15 +85,14 @@ const Content = styled.ul`
     display: flex;
     flex-direction:column;
     gap: 20px;
-`
+    
+    `
 
 const ContentList = styled.li`
     list-style: none;
-    padding: 20px 40px;
+    padding: 60px 30px;
     font-family: Noto Sans KR;
-    /* span{
-        height: 80px;
-    } */
+    cursor: pointer;
 `
 
 const Title = styled.h2`
@@ -109,6 +100,10 @@ const Title = styled.h2`
     font-weight: 500;
     margin-bottom: 6px;
     color: #555;
+    &:hover{
+        text-decoration-line: underline;
+    }
+    
 `
 
 const Datails = styled.span`
