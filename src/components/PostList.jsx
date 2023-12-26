@@ -1,4 +1,4 @@
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, orderBy, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import PostItem from './Post';
@@ -8,11 +8,15 @@ import Post from './Post';
 import styled from 'styled-components';
 import CategoryList from './CategoryList';
 import SideBar from './SideBar';
+import PostDetails from '../pages/PostDetails';
+import DetailPageEvent from './DetailPageEvent';
+import { useNavigate } from 'react-router-dom';
 
 
 function PostList(props) {
 
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState([]);
+    const navigate = useNavigate();
 
     const fetchPosts = async () => {
         const postQuery = query(
@@ -39,17 +43,26 @@ function PostList(props) {
         fetchPosts();
     }, []);
 
-
-
+    const details = () => {
+        navigate(`products/detail/${posts.id}`, {
+            state: {
+                id: posts.id,
+                title: posts.title,
+                post: posts.post,
+                photoURL: posts.photoURL,
+                createdAt: posts.createdAt,
+            }
+        })
+    }
 
     return (
         <PostWrapper className='container'>
             {/* {JSON.stringify(posts)}; */}
             <SideBar />
-               
+
             <Content>
                 {posts.slice(0, 8).map((post) => ( //최대 8개까지만 보이고, 글이 개별적으로 보이게
-                    <ContentList key={post.id}>
+                    <ContentList key={post.id} onClick={details}>
                         <Title dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }} />
                         <Datails dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(post.post,
@@ -61,8 +74,6 @@ function PostList(props) {
                     </ContentList>
                 ))}
             </Content>
-
-
         </PostWrapper>
     );
 }
@@ -73,8 +84,6 @@ const PostWrapper = styled.div`
     width: 1080px;
     overflow: hidden;
 `
-
-
 
 const Content = styled.ul`
     width: 68.518518518518519%;
@@ -118,8 +127,6 @@ const Datails = styled.span`
     p{
         display: inline;
     }
-    
-    
 `
 
 const PublishedDate = styled.span`

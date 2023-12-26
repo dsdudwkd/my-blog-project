@@ -12,7 +12,6 @@ function AllContent(props) {
     return (
         <ContentWrapper>
             <div className='container'>
-
                 <PostList/>
             </div>
         </ContentWrapper>
