@@ -1,35 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import UserData from './UserData';
 import { onUserState, auth, db } from '../api/firebase';
-import { addDoc, collection, getFirestore } from 'firebase/firestore';
+import { addDoc, collection, doc, documentId, getDoc, getFirestore, query, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 import styled from 'styled-components';
 
-function Replies(props) {
+function Replies(post) {
 
     const [isLoading, setIsLoading] = useState(false);
-    const [user, setUser] = useState('');
+    const [userInfo, setUserInfo] = useState('');
     const [reply, setReply] = useState('');
-
+    const user = auth.currentUser;
+    console.log(post)
     const onChange = (e) => {
         setReply(e.target.value);
     }
-
+    // console.log(post)
     const onSubmit = async (e) => {
         e.preventDefault();
-        const user = auth.currentUser;
-        if(!user || reply === '' || isLoading) return;
+        if (!user || reply === '' || isLoading) return;
 
-        try{
+        try {
             setIsLoading(true);
-            await addDoc(collection(db, 'replies'),{
+            //글(문서) Id 
+            const postId = post.postId;
+            console.log(postId)
+            //해당 글에 대한 댓글 작성을 위해 하위 컬렉션 생성
+            const repliesRef = collection(db, 'posts', postId, 'replies');
+            // 댓글 데이터 작성
+            await addDoc(repliesRef, {
                 reply,
                 userId: user.uid,
                 createdAt: Date.now(),
-            })
-        }catch(error){
+            });
+        } catch (error) {
             console.error(error);
-        }finally{
+        } finally {
             setIsLoading(false);
             setReply('');
         }
@@ -37,7 +43,7 @@ function Replies(props) {
 
     useEffect(() => {
         onUserState((user) => {
-            setUser(user);
+            setUserInfo(user);
         })
     }, [])
 
@@ -45,12 +51,12 @@ function Replies(props) {
 
     return (
         <ReplyWrapper className='container'>
-            <div className='replyTitle'>댓글</div>
+            <h2 className='replyTitle'>댓글</h2>
             <form onSubmit={onSubmit}>
                 <div className='replyArea'>
-                    {/* <img src={auth.currentUser.photoURL} alt={auth.currentUser.displayName} /> */}
+                    {/* <img src={user.photoURL} alt={user.displayName} /> */}
                     <div>
-                        {/* <span>{auth.currentUser.displayName}</span> */}
+                        {/* <span>{user.displayName}</span> */}
                         <input
                             type="text"
                             placeholder='내용을 입력하세요.'
@@ -58,8 +64,8 @@ function Replies(props) {
                             value={reply}
                         />
                     </div>
-                    <button type='submit'>
-                        {isLoading? '업로드 중' : '등록'}
+                    <button>
+                        {isLoading ? '업로드 중' : '등록'}
                     </button>
                 </div>
             </form>
@@ -70,6 +76,10 @@ function Replies(props) {
 export default Replies;
 
 const ReplyWrapper = styled.div`
+
+    .replyTitle{
+
+    }
     img{
         width: 40px;
         height: 40px;

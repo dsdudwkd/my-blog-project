@@ -194,7 +194,7 @@ const NewPost = () => {
                     </div>
 
 
-                    <button type='submit' className='submitBtn'>
+                    <button className='submitBtn'>
                         {isLoading ? '업로드 중..' : '완료'}
                     </button>
                 </form>

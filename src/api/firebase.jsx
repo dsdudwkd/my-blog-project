@@ -111,17 +111,6 @@ export function onUserState(callback) {
     })
 }
 
-//이메일로 회원가입하기
-// export async function joinEmail(email, password) {
-//     const auth = getAuth();
-//     try {
-//         const userAccount = await createUserWithEmailAndPassword(auth, email, password);
-//         const user = userAccount.user;
-
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
 
 //회원가입한 이메일로 로그인하기
 export async function loginEmail(email, password) {
@@ -132,17 +121,6 @@ export async function loginEmail(email, password) {
         console.error(error);
     }
 }
-
-// //비밀번호 재설정
-// export async function changePassword(){
-//     const auth = getAuth();
-
-//     try{
-//         const sendEmail = await sendPasswordResetEmail(auth, )
-//     }catch(error){
-//         console.error(error);
-//     }
-// }
 
 //파이어베이스에 카테고리 연동
 export async function addCategory(category) {

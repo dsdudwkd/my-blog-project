@@ -6,14 +6,15 @@ import { auth, db } from '../api/firebase';
 import SideBar from '../components/SideBar';
 import DOMPurify from 'dompurify';
 import { CiMenuKebab } from "react-icons/ci";
+import Replies from '../components/Replies';
 
 function PostDetails() {
     const post = useLocation().state;
     const [show, setShow] = useState(false);
     const user = auth.currentUser;
     const navigate = useNavigate();
-    // console.log(post)
-    console.log(user.uid);
+    // console.log(post.id)
+    // console.log(user.uid);
 
     const backgroundStyle = {
         background: post.photoURL ? `#cccccc url(${post.photoURL}) no-repeat center / cover` : '#666',
@@ -27,7 +28,7 @@ function PostDetails() {
 
     const deletePost = async (postId) => {
         const deleteDocs = await deleteDoc(doc(db, 'post', user.uid));
-        
+
         alert('정말로 삭제하시겠습니까?');
         navigate('/');
     }
@@ -42,7 +43,7 @@ function PostDetails() {
                     <span>{post.userName}</span>
                     <span>{post.createdAt}</span>
                     <CiMenuKebab className='svg' onClick={handleBtn} />
-                    
+
                 </div>
             </Title>
             <Container className='container'>
@@ -52,11 +53,11 @@ function PostDetails() {
                         __html: DOMPurify.sanitize(post.post)
                     }} />
 
+                <Replies post={post.id} />{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
                     <button>수정</button>
                     <button onClick={deletePost}>삭제</button>
-                    
                 </Button>
             </Container>
         </DetailsWrapper>
@@ -121,7 +122,7 @@ const Button = styled.div`
     gap: 5px;
     padding: 10px 0;
     position: absolute;
-    top: 300px;
+    top: 370px;
     left: 210px;
     border: 1px solid #ECECEC;
     border-radius: 4px;

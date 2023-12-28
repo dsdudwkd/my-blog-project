@@ -93,11 +93,6 @@ const ContentList = styled.li`
     padding: 60px 30px;
     font-family: Noto Sans KR;
     cursor: pointer;
-    &:hover {
-        ${Title} {
-            text-decoration-line: underline;
-        }
-    }
 `
 
 const Title = styled.h2`
