@@ -8,6 +8,7 @@ import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
 import { FaPlus } from "react-icons/fa";
 import {DOMPurify} from 'dompurify';
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -20,6 +21,7 @@ const NewPost = () => {
     const [docRef, setDocRef] = useState(null);
     const user = auth.currentUser;
     const quillRef = useRef(null);
+    const navigate = useNavigate();
 
 
 
@@ -130,6 +132,7 @@ const NewPost = () => {
             console.error(error);
         } finally {
             setIsLoading(false);
+            navigate('/'); //완료 후 홈 화면으로 이동
 
         }
     }

@@ -51,7 +51,7 @@ function PostList(props) {
         <PostWrapper className='container'>
             <SideBar />
 
-            <Content>
+            <ContentContainer>
                 {posts.map((post) => ( //최대 8개까지만 보이고, 글이 개별적으로 보이게
                     <ContentList key={post.id} onClick={()=>{details(post.id)}}>
                         <Title className='title' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }} />
@@ -64,7 +64,7 @@ function PostList(props) {
                         <PublishedDate dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.createdAt.substring(0, 10))/* 시간을 제외한 날짜만 보이게 */ }} />
                     </ContentList>
                 ))}
-            </Content>
+            </ContentContainer>
         </PostWrapper>
     );
 }
@@ -77,7 +77,7 @@ const PostWrapper = styled.div`
     overflow: hidden;
 `
 
-const Content = styled.ul`
+const ContentContainer = styled.ul`
     width: 68.518518518518519%;
     float: right;
     box-sizing: border-box;
@@ -93,6 +93,11 @@ const ContentList = styled.li`
     padding: 60px 30px;
     font-family: Noto Sans KR;
     cursor: pointer;
+    &:hover {
+        ${Title} {
+            text-decoration-line: underline;
+        }
+    }
 `
 
 const Title = styled.h2`
