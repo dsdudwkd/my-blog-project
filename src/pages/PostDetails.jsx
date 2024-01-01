@@ -2,22 +2,34 @@ import { collection, deleteDoc, doc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { auth, db } from '../api/firebase';
+import { auth, db, onUserState, storage } from '../api/firebase';
 import SideBar from '../components/SideBar';
 import DOMPurify from 'dompurify';
 import { CiMenuKebab } from "react-icons/ci";
 import Replies from '../components/Replies';
+import { deleteObject, ref } from 'firebase/storage';
 
 function PostDetails() {
     const post = useLocation().state;
     const [show, setShow] = useState(false);
-    const user = auth.currentUser;
+    const [user, setUser] = useState(null);
     const navigate = useNavigate();
-    // console.log(post.id)
-    // console.log(user.uid);
 
+    useEffect(() => {
+        onUserState((user) => {
+            setUser(user);
+        })
+    }, [])
+
+    if (!user) {
+        // 사용자 데이터가 로딩 중인 경우
+        return <div>로딩 중...</div>;
+    }
+    console.log(user);
+    console.log(post.id);
+    console.log(post);
     const backgroundStyle = {
-        background: post.photoURL ? `#cccccc url(${post.photoURL}) no-repeat center / cover` : '#666',
+        background: post.mainPhotoURL ? `#cccccc url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
     };
 
     const handleBtn = () => {
@@ -26,11 +38,23 @@ function PostDetails() {
         setShow(!show);
     };
 
-    const deletePost = async (postId) => {
-        const deleteDocs = await deleteDoc(doc(db, 'post', user.uid));
+    const deletePost = async () => {
+        const ok = window.confirm('정말로 삭제하시겠습니까?'); //Unexpected use of 'confirm'" 오류 해결 = 바로 confirm 메서드 말고 window.confirm으로 작성
+        
+        if (!ok || user.uid !== post.userId) return;
+        
+        try {
+            await deleteDoc(doc(db, 'posts', post.id)); //문서의 id로 삭제
+            if(post.mainPhotoURL){
+                const photoRef = ref(storage, `post/${user.uid}/${post.id}`);
+                await deleteObject(photoRef);
+            }
+            
+            navigate('/');
+        } catch (error) {
+            console.error(error);
+        }
 
-        alert('정말로 삭제하시겠습니까?');
-        navigate('/');
     }
 
     return (
@@ -42,8 +66,9 @@ function PostDetails() {
                 <div>
                     <span>{post.userName}</span>
                     <span>{post.createdAt}</span>
-                    <CiMenuKebab className='svg' onClick={handleBtn} />
-
+                     {user.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
+                        <CiMenuKebab className='svg' onClick={handleBtn} /> : null
+                    }
                 </div>
             </Title>
             <Container className='container'>
@@ -53,7 +78,7 @@ function PostDetails() {
                         __html: DOMPurify.sanitize(post.post)
                     }} />
 
-                <Replies post={post.id} />{/* 문서 id 값 전달 */}
+                    <Replies post={post.id} />{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
                     <button>수정</button>
@@ -95,7 +120,7 @@ const Title = styled.div`
             border-radius: 100%;
             padding: 2px;
             position: relative;
-           
+            cursor: pointer;
         }
     }
 `
@@ -122,7 +147,7 @@ const Button = styled.div`
     gap: 5px;
     padding: 10px 0;
     position: absolute;
-    top: 370px;
+    top: 300px;
     left: 210px;
     border: 1px solid #ECECEC;
     border-radius: 4px;

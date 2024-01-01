@@ -2,12 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
-import { addDoc, collection, doc, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, refEqual, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
 import { FaPlus } from "react-icons/fa";
-import {DOMPurify} from 'dompurify';
+import { DOMPurify } from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -22,8 +22,6 @@ const NewPost = () => {
     const user = auth.currentUser;
     const quillRef = useRef(null);
     const navigate = useNavigate();
-
-
 
     const writeTitle = (e) => {
         setTitle(e.target.value);
@@ -41,7 +39,7 @@ const NewPost = () => {
         })
     }, [])
 
-    const imageHandler = async (content) => {
+    const imageHandler = async () => { //quill Editor 이미지 첨부 시 이미지 처리 및 스토리지에 추가하는 함수
         const input = document.createElement("input");
         input.setAttribute("type", "file");
         input.setAttribute("accept", "image/*");
@@ -51,26 +49,20 @@ const NewPost = () => {
             const file = input.files[0];
             const range = editor.getSelection(true);
             try {
-                const fileName = `${user.uid}-${file.name}`;
+                const fileSize = file.size;
+                const maxSize = 1024 ** 2 - 89;
                 const storagePath = `post/${user.uid}-${user.displayName}/${file.name}`;
                 const fileRef = storageRef(storage, storagePath);
-                console.log(fileName)
-                console.log(storagePath)
-                console.log(fileRef);
-
                 const snapshot = await uploadBytes(fileRef, file);
                 const url = await getDownloadURL(snapshot.ref)
 
-                editor.insertEmbed(range.index, "image", url);
-                editor.setSelection(range.index + 1);
-
-                const fileSize = file.size;
-                const maxSize = 20 * 1024 * 1024;
-
                 if (fileSize > maxSize) {
-                    alert("업로드 가능한 최대 이미지 용량은 20MB입니다.");
+                    alert("업로드 가능한 최대 이미지 용량은 1MB입니다.");
                     return;
                 }
+                
+                editor.insertEmbed(range.index, "image", url);
+                editor.setSelection(range.index + 1);
             } catch (error) {
                 console.log(error);
             }
@@ -78,23 +70,30 @@ const NewPost = () => {
     };
     const onFileChange = (e) => {
         const { files } = e.target;
+        const fileSize = files[0].size;
+        const maxSize = 1024 * 1024 * 1;
+        
         if (files && files.length === 1) {
-            setFile(files[0]);
-            const reader = new FileReader();
+            if (fileSize < maxSize) { //사진 1MB 용량만 첨부할 수 있도록 추가
+                setFile(files[0]);
+                const reader = new FileReader();
 
-            reader.onload = () => {
-                setPreviewURL(reader.result);
+                reader.onload = () => {
+                    setPreviewURL(reader.result);
+                }
+                if (file) { //[error] Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'.에러 처리
+                    reader.readAsDataURL(files[0]) // 목록의 첫 번째 파일을 읽어서 사진을 변경해도 오류 생기지 않게
+                }
+            } else {
+                alert('업로드 가능한 최대 이미지 용량은 1MB입니다.');
+                return;
             }
-            if (file) { //[error] Failed to execute 'readAsDataURL' on 'FileReader': parameter 1 is not of type 'Blob'.에러 처리
-                reader.readAsDataURL(files)
 
-            }
         }
     };
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        // const user = auth.currentUser;
 
         if (!user || isLoading) return;
         if (title.trim() === "") {
@@ -110,20 +109,19 @@ const NewPost = () => {
             const newDocRef = await addDoc(collection(db, 'posts'), {
                 title,
                 post,
-                createdAt: new Date((new Date()).getTime() + kr_time).toISOString().replace('T', ' ').substring(0,16),
+                createdAt: new Date((new Date()).getTime() + kr_time).toISOString().replace('T', ' ').substring(0, 16),
                 userId: user.uid,
                 userName: user.displayName || "익명"
             });
+            
             if (file) {
                 const locationRef = ref(storage, `post/${user.uid}/${newDocRef.id}`)
                 const snapShot = await uploadBytes(locationRef, file);
                 const url = await getDownloadURL(snapShot.ref);
-
                 updateDoc(newDocRef, {
-                    photoURL: url
+                    mainPhotoURL: url
                 })
             }
-
             setDocRef(newDocRef);
             setPost('');
             setTitle('');

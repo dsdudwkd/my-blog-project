@@ -11,7 +11,7 @@ function Replies(post) {
     const [userInfo, setUserInfo] = useState('');
     const [reply, setReply] = useState('');
     const user = auth.currentUser;
-    console.log(post)
+    // console.log(post)
     const onChange = (e) => {
         setReply(e.target.value);
     }

@@ -141,5 +141,4 @@ export async function getCategories() {
     })
 }
 
-
 export default firebase;
