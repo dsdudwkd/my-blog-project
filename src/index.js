@@ -16,6 +16,7 @@ import Profile from './pages/Profile';
 import ResetPw from './pages/ResetPw';
 import { auth } from './api/firebase';
 import PostDetails from './pages/PostDetails';
+import EditPost from './pages/EditPost';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -77,7 +78,8 @@ const router = createBrowserRouter([
             <AddCategory />
           </AdminRoute>
       },
-      { path: '/products/detail/:id', element: <PostDetails /> },
+      { path: '/posts/detail/:id', element: <PostDetails /> },
+      { path: '/posts/edit/:id', element: <EditPost /> },
 
     ]
   }

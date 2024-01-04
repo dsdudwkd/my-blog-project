@@ -49,7 +49,7 @@ function PostList(props) {
         const post = posts.find((p) => p.id === postId);
 
         if(post){
-            navigate(`products/detail/${post.id}`, {
+            navigate(`posts/detail/${post.id}`, {
                 state: {...post}
             })
         }

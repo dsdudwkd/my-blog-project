@@ -1,5 +1,5 @@
 import React from 'react';
-import Replies from '../components/Replies';
+import Replies from '../components/WriteReply';
 import { ref } from 'firebase/database';
 import { getDoc } from 'firebase/firestore';
 import styled from 'styled-components';

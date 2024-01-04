@@ -6,8 +6,10 @@ import { auth, db, onUserState, storage } from '../api/firebase';
 import SideBar from '../components/SideBar';
 import DOMPurify from 'dompurify';
 import { CiMenuKebab } from "react-icons/ci";
-import Replies from '../components/Replies';
+import Replies from '../components/WriteReply';
 import { deleteObject, ref } from 'firebase/storage';
+import EditPost from './EditPost';
+import WriteReply from '../components/WriteReply';
 
 function PostDetails() {
     const post = useLocation().state;
@@ -22,34 +24,36 @@ function PostDetails() {
     }, [])
 
     if (!user) {
-        // 사용자 데이터가 로딩 중인 경우
+        // 사용자 데이터가 로딩 중인 경우나 user 정보가 없을 때
         return <div>로딩 중...</div>;
     }
-    console.log(user);
-    console.log(post.id);
-    console.log(post);
+    // console.log(user);
+    // console.log(post.id);
+    // console.log(post);
     const backgroundStyle = {
         background: post.mainPhotoURL ? `#cccccc url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
     };
 
+    //수정 삭제 버튼 박스 토글 형식으로 
     const handleBtn = () => {
         const btns = document.querySelectorAll('.btns');
         btns.forEach(el => (el.style.display = show ? 'none' : 'flex')); // 토글 형식으로 show 상태 변경
         setShow(!show);
     };
 
+    // 삭제 이벤트
     const deletePost = async () => {
         const ok = window.confirm('정말로 삭제하시겠습니까?'); //Unexpected use of 'confirm'" 오류 해결 = 바로 confirm 메서드 말고 window.confirm으로 작성
-        
+
         if (!ok || user.uid !== post.userId) return;
-        
+
         try {
             await deleteDoc(doc(db, 'posts', post.id)); //문서의 id로 삭제
-            if(post.mainPhotoURL){
+            if (post.mainPhotoURL) {
                 const photoRef = ref(storage, `post/${user.uid}/${post.id}`);
                 await deleteObject(photoRef);
             }
-            
+
             navigate('/');
         } catch (error) {
             console.error(error);
@@ -66,7 +70,7 @@ function PostDetails() {
                 <div>
                     <span>{post.userName}</span>
                     <span>{post.createdAt}</span>
-                     {user.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
+                    {user.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
                         <CiMenuKebab className='svg' onClick={handleBtn} /> : null
                     }
                 </div>
@@ -78,10 +82,13 @@ function PostDetails() {
                         __html: DOMPurify.sanitize(post.post)
                     }} />
 
-                    <Replies post={post.id} />{/* 문서 id 값 전달 */}
+                    <WriteReply postId={post.id} />{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
-                    <button>수정</button>
+                    <button>
+                        수정
+                        <EditPost />
+                    </button>
                     <button onClick={deletePost}>삭제</button>
                 </Button>
             </Container>
