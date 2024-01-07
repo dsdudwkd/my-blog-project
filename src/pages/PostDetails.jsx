@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { auth, db, onUserState, storage } from '../api/firebase';
 import SideBar from '../components/SideBar';
 import DOMPurify from 'dompurify';
-import { CiMenuKebab } from "react-icons/ci";
+import { VscKebabVertical } from "react-icons/vsc";
 import Replies from '../components/WriteReply';
 import { deleteObject, ref } from 'firebase/storage';
 import EditPost from './EditPost';
@@ -71,7 +71,7 @@ function PostDetails() {
                     <span>{post.userName}</span>
                     <span>{post.createdAt}</span>
                     {user.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
-                        <CiMenuKebab className='svg' onClick={handleBtn} /> : null
+                        <VscKebabVertical className='svg' onClick={handleBtn} /> : null
                     }
                 </div>
             </Title>
@@ -116,17 +116,16 @@ const Title = styled.div`
     div{
         display: flex;
         align-items: center;
-        gap: 20px;
+        gap: 16px;
         color: #fbfbfb;
         font-size: 14px;
         svg{
-            width: 14px;
-            height: 14px;
+            width: 16px;
+            height: 16px;
             color: #fff;
             border: 1px solid #fff;
             border-radius: 100%;
             padding: 2px;
-            position: relative;
             cursor: pointer;
         }
     }

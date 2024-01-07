@@ -86,6 +86,7 @@ function WriteReply(post) {
                             placeholder='내용을 입력하세요.'
                             onChange={onChange}
                             onInput={onInput}
+                            style={{whiteSpace: 'pre-line'}}
                             value={reply}
                         />
                     </div>
@@ -110,8 +111,9 @@ function WriteReply(post) {
 export default WriteReply;
 
 const ReplyWrapper = styled.div`
-    margin-top: 300px;
+    
     .replyTitle{
+        margin-top: 300px;
         margin-bottom: 10px;
         padding-bottom: 20px;
         color: #444;
@@ -120,7 +122,6 @@ const ReplyWrapper = styled.div`
     .replyArea{
         display: flex;
         gap: 10px;
-        justify-content: center;
         font-family: Noto Sans KR;
         img {
             margin: 0;
