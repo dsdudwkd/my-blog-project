@@ -12,10 +12,9 @@ function WriteReply(post) {
     const [userInfo, setUserInfo] = useState('');
     const [reply, setReply] = useState('');
     const [hover, setHover] = useState(false);
+    const [count, setCount] = useState(0);
     const user = auth.currentUser;
     const postId = post.postId;
-
-
 
     const onChange = (e) => {
         setReply(e.target.value);
@@ -31,9 +30,12 @@ function WriteReply(post) {
     const onMouseEnter = () => {
         setHover(true);
     }
-
     const onMouseLeave = () => {
         setHover(false);
+    }
+
+    const countReply = () => {
+        setCount(count+1);
     }
 
     const onSubmit = async (e) => {
@@ -44,7 +46,7 @@ function WriteReply(post) {
             setIsLoading(true);
             //글(문서) Id 
             
-            console.log(postId)
+            // console.log(postId)
             //해당 글에 대한 댓글 작성을 위해 하위 컬렉션 생성
             const repliesRef = collection(db, 'posts', postId, 'replies');
             //한국 시간 설정(9시간 차이 나므로)
@@ -71,11 +73,9 @@ function WriteReply(post) {
         })
     }, [])
 
-
-
     return (
         <ReplyWrapper className='container'>
-            <h2 className='replyTitle'>댓글</h2>
+            <h2 className='replyTitle'>댓글 {count}</h2>
             <ReplyList postId={postId} />
             <form onSubmit={onSubmit}>
                 <div className='replyArea'>
@@ -94,10 +94,10 @@ function WriteReply(post) {
                 </div>
                 <>
                     {reply.length < 1 ?
-                        (<button disabled style={{ cursor: 'not-allowed', border: '1px solid #dedede' }} >
+                        (<button disabled style={{ cursor: 'not-allowed', border: '1px solid #dedede' }}  >
                             등록
                         </button>) :
-                        (<button className={hover ? 'colorChange' : 'basic'} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+                        (<button className={hover ? 'colorChange' : 'basic'} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={countReply}>
                             {isLoading ? '업로드 중' : '등록'}
                         </button>)
                     }

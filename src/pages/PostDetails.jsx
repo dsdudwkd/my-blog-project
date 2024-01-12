@@ -1,6 +1,6 @@
 import { collection, deleteDoc, doc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { auth, db, onUserState, storage } from '../api/firebase';
 import SideBar from '../components/SideBar';
@@ -31,7 +31,10 @@ function PostDetails() {
     // console.log(post.id);
     // console.log(post);
     const backgroundStyle = {
-        background: post.mainPhotoURL ? `#cccccc url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
+        background: post.mainPhotoURL? `url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
+        //배경색 이미지와 혼합하여 사용하기
+        backgroundColor: post.mainPhotoURL? '#cccccc' : '#666',
+        backgroundBlendMode: post.mainPhotoURL? 'multiply' : '#666', //https://webisfree.com/2015-09-23/%5Bcss%5D-background-blend-mode-%EC%9D%B4%EB%AF%B8%EC%A7%80%EC%99%80-%EB%B0%B0%EA%B2%BD%EC%83%89-%ED%98%BC%ED%95%A9%ED%95%98%EA%B8%B0 참조
     };
 
     //수정 삭제 버튼 박스 토글 형식으로 
@@ -58,7 +61,14 @@ function PostDetails() {
         } catch (error) {
             console.error(error);
         }
+    }
 
+    //수정 페이지로 이동
+    const editPost = () => {
+        navigate(`/posts/edit/${post.id}`, {
+            state : {...post} //문서 정보 넘길 state 값
+        });
+        
     }
 
     return (
@@ -76,7 +86,7 @@ function PostDetails() {
                 </div>
             </Title>
             <Container className='container'>
-                <SideBar />
+                <SideBar/>
                 <Post >
                     <p dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(post.post)
@@ -85,9 +95,8 @@ function PostDetails() {
                     <WriteReply postId={post.id} />{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
-                    <button>
+                    <button onClick={editPost}>
                         수정
-                        <EditPost />
                     </button>
                     <button onClick={deletePost}>삭제</button>
                 </Button>
@@ -109,6 +118,9 @@ const Title = styled.div`
     font-family: Noto Sans KR;
     text-align: left;
     box-sizing: border-box;
+    /* background-image: url('/testimage.jpg'); */
+    
+    
     h2{
         font-size: 34px;
         color: #fff;
