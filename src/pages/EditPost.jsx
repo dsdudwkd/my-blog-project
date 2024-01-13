@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
-import { addDoc, collection, doc, refEqual, setDoc, updateDoc } from 'firebase/firestore';
+import { doc, refEqual, setDoc, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
 import { FaPlus } from "react-icons/fa";
-import { DOMPurify } from 'dompurify';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { MdPhotoCamera } from "react-icons/md";
+
 
 
 
@@ -175,14 +176,14 @@ const EditPost = () => {
                             <label htmlFor="representitiveImg">
                                 {mainFile && mainFile.type.startsWith('image/') ? (
                                     <>
-                                        <img src={URL.createObjectURL(mainFile)} alt="이미지 미리보기" value="다시 선택" style={{ width: '100px', height: '100px', padding: '0', marginBottom: ' 5px' }} />
+                                        <img src={URL.createObjectURL(mainFile)} alt="이미지 미리보기" value="이미지 선택" style={{ width: '100px', height: '100px', padding: '0', marginBottom: ' 5px' }} />
                                         (이미지 미리보기)
                                     </>
                                 ) : (
                                     // 대표 사진이 있다면 미리보기로 보여주기
                                     postInfo.mainPhotoURL ? (
                                         <>
-                                            <img src={postInfo.mainPhotoURL} alt="이미지 미리보기" value="다시 선택" style={{ width: '100px', height: '100px', padding: '0', marginBottom: ' 5px' }} />
+                                            <img src={postInfo.mainPhotoURL} alt="이미지 미리보기" value="이미지 선택" style={{ width: '100px', height: '100px', padding: '0', marginBottom: ' 5px' }} />
                                             (이미지 미리보기)
                                         </>
                                     ) : (

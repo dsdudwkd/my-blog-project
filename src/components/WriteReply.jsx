@@ -6,16 +6,16 @@ import { getAuth } from 'firebase/auth';
 import styled from 'styled-components';
 import ReplyList from './ReplyList';
 
-function WriteReply(post) {
+function WriteReply(postID) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [userInfo, setUserInfo] = useState('');
     const [reply, setReply] = useState('');
     const [hover, setHover] = useState(false);
-    const [count, setCount] = useState(0);
+    
     const user = auth.currentUser;
-    const postId = post.postId;
-
+    const postId = postID.postId;
+    
     const onChange = (e) => {
         setReply(e.target.value);
     }
@@ -32,10 +32,6 @@ function WriteReply(post) {
     }
     const onMouseLeave = () => {
         setHover(false);
-    }
-
-    const countReply = () => {
-        setCount(count+1);
     }
 
     const onSubmit = async (e) => {
@@ -75,7 +71,7 @@ function WriteReply(post) {
 
     return (
         <ReplyWrapper className='container'>
-            <h2 className='replyTitle'>댓글 {count}</h2>
+            <h2 className='replyTitle'>댓글</h2>
             <ReplyList postId={postId} />
             <form onSubmit={onSubmit}>
                 <div className='replyArea'>
@@ -90,14 +86,13 @@ function WriteReply(post) {
                             value={reply}
                         />
                     </div>
-
                 </div>
                 <>
                     {reply.length < 1 ?
                         (<button disabled style={{ cursor: 'not-allowed', border: '1px solid #dedede' }}  >
                             등록
                         </button>) :
-                        (<button className={hover ? 'colorChange' : 'basic'} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} onClick={countReply}>
+                        (<button className={hover ? 'colorChange' : 'basic'} onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave} >
                             {isLoading ? '업로드 중' : '등록'}
                         </button>)
                     }

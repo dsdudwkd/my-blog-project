@@ -166,7 +166,7 @@ const Button = styled.div`
     padding: 10px 0;
     position: absolute;
     top: 300px;
-    left: 210px;
+    left: 200px;
     border: 1px solid #ECECEC;
     border-radius: 4px;
     background-color: #fff;
@@ -176,6 +176,8 @@ const Button = styled.div`
         border: none;
         background-color: #fff;
         padding: 6px 12px;
+        font-size: 14px;
+        font-family: Noto Sans KR;
         &:hover{
             background-color: #f6f6f6;
         }
