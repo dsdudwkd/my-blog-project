@@ -10,8 +10,6 @@ import { FaPlus } from "react-icons/fa";
 import { DOMPurify } from 'dompurify';
 import { useNavigate } from 'react-router-dom';
 
-
-
 const NewPost = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [title, setTitle] = useState('');

@@ -9,7 +9,7 @@ import { FirebaseError } from 'firebase/app';
 function Join(props) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    const [authNum, setAuthNum] = useState('');
+    // const [authNum, setAuthNum] = useState('');
     const [pw, setPw] = useState('');
     const [pw2, setPw2] = useState('');
 
@@ -27,7 +27,6 @@ function Join(props) {
 
     const handleJoin = async (event) => {
         event.preventDefault();
-
         setNameErr('');
         setEmailErr('');
         setPwErr('');
@@ -46,7 +45,6 @@ function Join(props) {
             setPwConfirmErr('비밀번호를 입력하세요')
         }
 
-
         try {
             const auth = getAuth();
             const userAccount = await createUserWithEmailAndPassword(auth, email, pw);
@@ -55,7 +53,7 @@ function Join(props) {
                 displayName: name
             })
             await logOut();
-            navigate('/');
+            navigate('/login');
         } catch (error) {
             console.error(error);
             if (error instanceof FirebaseError) {
@@ -64,9 +62,9 @@ function Join(props) {
                 }
             }
         }
-        
+
     };
-   
+
 
 
     return (
@@ -83,16 +81,16 @@ function Join(props) {
                                 onChange={(e) => { setName(e.target.value) }}
                                 onBlur={() => {
                                     if (name.trim() === '' || name.length <= 1 || !nameRegex.test(name)) {
-                                        setNameErr('이름을 정확히 입력해주세요.');
-                                        return
+                                        return setNameErr('이름을 정확히 입력해주세요.');
+                                    } else{
+                                        return setNameErr('');
                                     }
                                 }}
                             />
-
                             {nameErr && <span>{nameErr}</span>}
                         </div>
                     </div>
-                    <div className='emailWrap wrap'>
+                    {<div className='emailWrap wrap'>
                         <label htmlFor="email">이메일</label>
                         <div>
                             <input type="text"
@@ -102,20 +100,20 @@ function Join(props) {
                                 onBlur={() => {
                                     if (!emailRegex.test(email)) {
                                         setEmailErr('이메일 형식에 맞게 입력해주세요.');
+                                    } else {
+                                        setEmailErr('');
                                     }
                                 }}
                             />
-                            <button className='emailAuthBtn' onClick={sendEmail}>인증하기</button>
+                            {/* <button className='emailAuthBtn' onClick={sendEmail}>인증하기</button> */}
                             {duplicatedErr && <span>{duplicatedErr}</span> || emailErr && <span>{emailErr}</span>}
                             { }
                         </div>
-
-                    </div>
-                    <div className='emailAuthWrap wrap'>
+                    </div>}
+                    {/* <div className='emailAuthWrap wrap'>
                         <label htmlFor="emailAuthText">인증번호</label>
                         <input type="text" id='emailAuthText' placeholder='인증번호를 입력하세요' value={authNum} />
-
-                    </div>
+                    </div> */}
                     <div className='pwWrap wrap'>
                         <label htmlFor="password">비밀번호</label>
                         <div>
@@ -126,8 +124,9 @@ function Join(props) {
                                 onChange={(e) => { setPw(e.target.value) }}
                                 onBlur={() => {
                                     if (pw.length < 8 || !pwRegex.test(pw)) {
-                                        setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
-                                        return;
+                                        return setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
+                                    } else {
+                                        setPwErr('');
                                     }
                                 }}
                                 minLength={8}
@@ -149,11 +148,12 @@ function Join(props) {
                                     // const pw = document.getElementById('password').value;
                                     // const pw2 = document.getElementById('passwordConfirm').value;
                                     if (pw !== pw2) {
-                                        setPwConfirmErr('비밀번호가 일치하지 않습니다.');
+                                        return setPwConfirmErr('비밀번호가 일치하지 않습니다.');
 
                                     } else if (pw2.length < 1) {
-                                        setPwConfirmErr('비밀번호를 입력해주세요');
-                                        return
+                                        return setPwConfirmErr('비밀번호를 입력해주세요');
+                                    } else {
+                                        setPwConfirmErr('');
                                     }
                                 }}
                                 minLength={8}

@@ -14,11 +14,6 @@ function UserData({ user: { photoURL, displayName } }) {
         })
     }, []);
 
-    //로그아웃
-    const userLogOut = () => {
-        logOut().then(setUser);
-    }
-
     return (
         <UserDataWrapper>
             <button id='userBtn'>

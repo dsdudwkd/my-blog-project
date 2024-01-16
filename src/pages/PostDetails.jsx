@@ -10,11 +10,14 @@ import Replies from '../components/WriteReply';
 import { deleteObject, ref } from 'firebase/storage';
 import EditPost from './EditPost';
 import WriteReply from '../components/WriteReply';
+import Loading from '../components/Loading';
+
 
 function PostDetails() {
     const post = useLocation().state;
     const [show, setShow] = useState(false);
     const [user, setUser] = useState(null);
+    const currentUser = auth.currentUser;
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -23,18 +26,18 @@ function PostDetails() {
         })
     }, [])
 
-    if (!user) {
-        // 사용자 데이터가 로딩 중인 경우나 user 정보가 없을 때
-        return <div>로딩 중...</div>;
-    }
-    // console.log(user);
+    // if (!user || !currentUser) {
+    //     // 사용자 데이터가 로딩 중인 경우나 user 정보가 없을 때
+    //     return <Loading />
+    // }
+    
     // console.log(post.id);
-    // console.log(post);
+    // console.log(post.userId, currentUser.uid);
     const backgroundStyle = {
-        background: post.mainPhotoURL? `url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
+        background: post.mainPhotoURL ? `url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
         //배경색 이미지와 혼합하여 사용하기
-        backgroundColor: post.mainPhotoURL? '#cccccc' : '#666',
-        backgroundBlendMode: post.mainPhotoURL? 'multiply' : '#666', //https://webisfree.com/2015-09-23/%5Bcss%5D-background-blend-mode-%EC%9D%B4%EB%AF%B8%EC%A7%80%EC%99%80-%EB%B0%B0%EA%B2%BD%EC%83%89-%ED%98%BC%ED%95%A9%ED%95%98%EA%B8%B0 참조
+        backgroundColor: post.mainPhotoURL ? '#cccccc' : '#666',
+        backgroundBlendMode: post.mainPhotoURL ? 'multiply' : '#666', //https://webisfree.com/2015-09-23/%5Bcss%5D-background-blend-mode-%EC%9D%B4%EB%AF%B8%EC%A7%80%EC%99%80-%EB%B0%B0%EA%B2%BD%EC%83%89-%ED%98%BC%ED%95%A9%ED%95%98%EA%B8%B0 참조
     };
 
     //수정 삭제 버튼 박스 토글 형식으로 
@@ -66,27 +69,27 @@ function PostDetails() {
     //수정 페이지로 이동
     const editPost = () => {
         navigate(`/posts/edit/${post.id}`, {
-            state : {...post} //문서 정보 넘길 state 값
+            state: { ...post } //문서 정보 넘길 state 값
         });
-        
-    }
 
+    }
     return (
 
         <DetailsWrapper >
+            
             {/* style={{background:`url(${post.photoURL}) no-repeat center / cover`}} react에서 inline으로 백그라운드 넣는 법 */}
             <Title className='title' style={backgroundStyle}>
                 <h2>{post.title}</h2>
                 <div>
                     <span>{post.userName}</span>
                     <span>{post.createdAt}</span>
-                    {user.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
-                        <VscKebabVertical className='svg' onClick={handleBtn} /> : null
+                    {currentUser && currentUser.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
+                        (<VscKebabVertical className='svg' onClick={handleBtn} />) : null
                     }
                 </div>
             </Title>
             <Container className='container'>
-                <SideBar/>
+                <SideBar />
                 <Post >
                     <p dangerouslySetInnerHTML={{
                         __html: DOMPurify.sanitize(post.post)
@@ -151,6 +154,9 @@ const Post = styled.div`
     width: calc(100% - (21.296296296296296%));
     padding: 72px 60px;
     box-sizing: border-box;
+    p{
+        line-height: 1.5;
+    }
     img{
         width: 300px;
         height: 300px;

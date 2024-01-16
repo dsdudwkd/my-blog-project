@@ -4,10 +4,9 @@ import { ref } from 'firebase/database';
 import { getDoc } from 'firebase/firestore';
 import styled from 'styled-components';
 import PostList from '../components/PostList';
+import { auth } from '../api/firebase';
 
 function AllContent(props) {
-
-    
 
     return (
         <ContentWrapper>

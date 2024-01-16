@@ -2,7 +2,7 @@ import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageResize from '@looop/quill-image-resize-module-react'
 
-Quill.register('modules/ImageResize', ImageResize)
+Quill.register('modules/ImageResize', ImageResize);
 
 export const modules = {
     toolbar: [
@@ -19,8 +19,8 @@ export const modules = {
         ["blockquote", "code-block"],
         ["clean"],
     ],
-    ImageResize: { modules : ["Resize"] }
-    
+    ImageResize: { modules: ["Resize"] }
+
 };
 export const formats = [
     "font",

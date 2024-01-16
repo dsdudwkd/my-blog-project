@@ -55,6 +55,11 @@ function PostList(props) {
         }
     }
 
+    const contentStyle = {
+        color : '#888',
+        backgroundColor: 'transparent'
+    }
+
     return (
         <PostWrapper className='container'>
             <SideBar />
@@ -66,9 +71,10 @@ function PostList(props) {
                         <Details dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(post.post,
                                 {
-                                    ALLOWED_TAGS: ['p', 'em', 'span'] //p, em, span 태그만 보이게
+                                    ALLOWED_TAGS: ['p', 'em', 'span'], //p, em, span 태그만 보이게
+                                    // ALLOWED_ATTR: {span: ["style"], p:["style"], em: ["style"]} //p, em, span 태그에 style 적용되게끔
                                 })
-                        }} />
+                        }}/>
                         <PublishedDate dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.createdAt.substring(0, 10))/* 시간을 제외한 날짜만 보이게 */ }} />
                     </ContentList>
                 ))}
@@ -119,6 +125,7 @@ const Details = styled.span`
     overflow: hidden;
     font-size: 14px;
     color: #888;
+    background-color: transparent;
     display: -webkit-box; 
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 3; //콘텐츠를 지정한 줄 수만큼으로 제한
@@ -129,7 +136,11 @@ const Details = styled.span`
     line-height: 25px;
     p{
         display: inline;
+        em{
+            font-style: normal;
+        }
     }
+    
 `
 
 const PublishedDate = styled.span`

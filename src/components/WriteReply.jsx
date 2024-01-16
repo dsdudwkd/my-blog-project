@@ -10,12 +10,13 @@ function WriteReply(postID) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [userInfo, setUserInfo] = useState('');
+    const [currentUser, setCurrentUser] = useState('');
     const [reply, setReply] = useState('');
     const [hover, setHover] = useState(false);
     
     const user = auth.currentUser;
     const postId = postID.postId;
-    
+
     const onChange = (e) => {
         setReply(e.target.value);
     }
@@ -75,9 +76,9 @@ function WriteReply(postID) {
             <ReplyList postId={postId} />
             <form onSubmit={onSubmit}>
                 <div className='replyArea'>
-                    {user.photoURL? (<img src={user.photoURL} alt={user.displayName} />) : ('')}
+                    {user && user.photoURL ? <img src={user.photoURL} alt={user.displayName} /> : ''}
                     <div className='reply'>
-                        <span>{user.displayName}</span>
+                        {user && user.displayName ? <span>{user.displayName}</span> : ''}
                         <textarea
                             placeholder='내용을 입력하세요.'
                             onChange={onChange}
