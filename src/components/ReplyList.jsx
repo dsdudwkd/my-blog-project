@@ -2,29 +2,33 @@ import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import styled from 'styled-components';
-import { auth, db } from '../api/firebase';
+import { admin, auth, db, onUserState } from '../api/firebase';
 import { VscKebabVertical } from "react-icons/vsc";
 
 function ReplyList(post) {
 
     const [replies, setReplies] = useState([]);
+    const [user, setUser] = useState('');
     const [edit, setEdit] = useState('');
     const [show, setShow] = useState(false);
     const [hover, setHover] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const postID = post.postId;
-    const user = auth.currentUser;
-
+    const currentUser = auth.currentUser;
+    // const admin = user.isAdmin;
+    // console.log(admin);
     useEffect(() => {
+        onUserState((user) => {
+            setUser(user);
+        })
         let unSubscribe = null;
-        const fetchReplies = async () => {
 
+        const fetchReplies = async () => {
             const replyQuery = query(
                 collection(db, 'posts', postID, 'replies'),
                 orderBy('createdAt'),
             )
-
 
             unSubscribe = await onSnapshot((replyQuery), (snapshot) => {
                 const replyArr = snapshot.docs.map((doc) => {
@@ -49,12 +53,13 @@ function ReplyList(post) {
     }, []);
     // replies.map((el)=>console.log(el.id))
 
+
     // 삭제 이벤트
     const deleteReply = async (replyId) => {
         const ok = window.confirm('정말로 삭제하시겠습니까?');
         const replyID = replies.find((el) => el.id === replyId);
 
-        if (!ok || user.uid !== replyID.userId) return;
+        if (!ok || currentUser.uid !== replyID.userId) return;
         try {
             await deleteDoc(doc(db, 'posts', postID, 'replies', replyID.id)); //문서의 id로 삭제
         } catch (error) {
@@ -75,11 +80,34 @@ function ReplyList(post) {
         event.stopPropagation(); // 이벤트가 부모 요소로 전파되지 않도록 방지
     };
 
+    //수정 버튼 누르면 editArea 부분 보이게
+    const changeEditForm = (that) => {
+        const editArea = document.querySelector('.editArea');
+        const replyArea = document.querySelector('.replyArea');
+        // replyArea.forEach((el, index)=> console.log(el[index] === that))
+        editArea.style.display = 'flex';
+        replyArea.style.display = 'none';
+    }
+
+    //취소 버튼 누르면 editArea 사라지게
+    const cancelEdit = (event) => {
+        const editArea = document.querySelector('.editArea');
+        // const replyArea = event.currentTarget.closest('.replyArea');
+        const replyArea = document.querySelector('.replyArea');
+        editArea.style.display = 'none';
+        replyArea.style.display = 'flex';
+        const btns = replyArea.querySelector('.btns');
+        btns.style.display = 'none';
+
+    }
+
     //수정 이벤트
     const editReply = (e, replyId) => {
         const replyInfo = replies.find((el) => el.id === replyId);
         console.log(replyInfo)
-        const changeReply = e.target.value;
+
+        const changeReply = e.target;
+        console.log(changeReply)
         replyInfo.reply = changeReply;
         setEdit(changeReply);
     }
@@ -91,8 +119,16 @@ function ReplyList(post) {
         text.style.height = text.scrollHeight + 'px';
     }
 
-    const onSubmit = async (e) => {
+    const onSubmit = async (e, replyId) => {
         e.preventDefault();
+        const replyID = replies.find((el) => el.id === replyId);
+        if (!currentUser || edit === '' || isLoading) return;
+
+        try {
+            const updateDocRef = doc(db, 'posts', postID, 'replies', replyID.id)
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     const onMouseEnter = () => {
@@ -107,27 +143,36 @@ function ReplyList(post) {
             <RepliesList className='RepliesList'>
                 <>
                     {replies.map((reply) => (
-                        <li key={reply.id} className='replyArea'>
-                            <div className='inner'>
-                                <div className='img'>
-                                    {reply.userImage ? (<img src={reply.userImage} alt={reply.userName} />) : ('')}
+                        <li key={reply.id} >
+                            <div className='replyArea'>
+                                <div className='inner'>
+                                    <div className='img'>
+                                        {reply.userImage ? (<img src={reply.userImage} alt={reply.userName} />) : (<div className='nonImg'>{reply.userName}</div>)}
+                                    </div>
+                                    <div className='title'>
+                                        <span >{reply.userName}</span>
+                                        <VscKebabVertical className='svg' onClick={(e) => { handleButton(e) }} />
+                                    </div>
                                 </div>
-                                <div className='title'>
-                                    <span >{reply.userName}</span>
-                                    <VscKebabVertical className='svg' onClick={(e) => { handleButton(e) }} />
+                                <div>
+                                    <p className='content' >{reply.reply}</p>
                                 </div>
+                                <div>
+                                    <p className='writedDate'>{reply.createdAt}</p>
+                                </div>
+                                {currentUser && reply.userId === currentUser.uid ?
+                                    <div className='btns'>
+                                        <button onClick={changeEditForm}>수정</button>
+                                        <button onClick={() => { deleteReply(reply.id) }}>삭제</button>
+                                    </div> :
+                                    <div className='btns'>
+                                        <button>신고하기</button>
+                                        {!currentUser && /* admin &&  */<button onClick={() => { deleteReply(reply.id) }}>삭제</button>}
+                                    </div>
+                                }
                             </div>
-                            <div>
-                                <p className='content' >{reply.reply}</p>
-                            </div>
-                            <div>
-                                <p className='writedDate'>{reply.createdAt}</p>
-                            </div>
-                            <div className='btns'>
-                                <button /* onClick={() => { editReply(reply.id) }} */>수정</button>
-                                <button onClick={() => { deleteReply(reply.id) }}>삭제</button>
-                            </div>
-                            <form className='replyArea' onSubmit={onSubmit}>
+
+                            <form className='editArea' onSubmit={onSubmit} style={{ display: 'none' }}>
                                 <div className='inner'>
                                     <div className='img'>
                                         {reply.userImage ? (<img src={reply.userImage} alt={reply.userName} />) : ('')}
@@ -142,14 +187,11 @@ function ReplyList(post) {
                                         value={edit}
                                         onChange={(e) => { editReply(e, reply.id) }}
                                     />
-
                                 </div>
                                 <div className='editBtns'>
-                                    <button>취소</button>
+                                    <button className='cancelEdit' onClick={cancelEdit}>취소</button>
                                     <button>등록</button>
                                 </div>
-
-
                             </form>
 
                         </li>
@@ -174,7 +216,7 @@ const RepliesList = styled.ul`
     flex-direction: column;
     margin-bottom: 30px;
     position: relative;
-    .replyArea{
+    .replyArea,.editArea{
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -185,10 +227,23 @@ const RepliesList = styled.ul`
             display: flex;
             gap: 10px;
             height: 30px;
-            img{
-                width: 40px;
-                height: 40px;
-                border-radius: 100%;
+            .img{
+                .nonImg{
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 100%;
+                    background-color: coral;
+                    color: #fff;
+                    text-align: center;
+                    font-weight: 600;
+                    /* font-size: 12px; */
+                    line-height: 40px;
+                }
+                img{
+                    width: 40px;
+                    height: 40px;
+                    border-radius: 100%;
+                }
             }
             .title{
                 width: 100%;
@@ -226,7 +281,7 @@ const RepliesList = styled.ul`
             gap: 5px;
             /* padding: 10px 0; */
             position: relative;
-            top: 0px;
+            top: -65px;
             left: 800px;
             border: 1px solid #ECECEC;
             border-radius: 4px;
@@ -242,6 +297,19 @@ const RepliesList = styled.ul`
                     background-color: #f6f6f6;
                 }
             }
+        }
+        textarea{
+            width: calc(100% - 50px);
+            max-height: 300px;
+            border-radius: 8px;
+        }
+        .editBtns{
+            display: flex;
+            justify-content: flex-end;
+            button{
+                display: inline;
+            }
+            
         }
         
     }

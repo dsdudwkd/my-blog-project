@@ -79,7 +79,7 @@ export async function logOut() {
 }
 
 //관리자 계정 관리
-async function admin(user) {
+export async function admin(user) {
     try {
         //snapShot = Firebase Realtime Database에서 데이터를 가져올 때 반환되는 객체
         //'admin' 경로에서 데이터를 가져와서 그 순간의 상태를 snapShot에 저장하고 상태를 확인하여 존재 여부 판단

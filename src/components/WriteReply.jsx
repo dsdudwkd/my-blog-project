@@ -5,6 +5,7 @@ import { addDoc, collection, doc, documentId, getDoc, getFirestore, query, setDo
 import { getAuth } from 'firebase/auth';
 import styled from 'styled-components';
 import ReplyList from './ReplyList';
+import { useNavigate } from 'react-router-dom';
 
 function WriteReply(postID) {
 
@@ -13,9 +14,10 @@ function WriteReply(postID) {
     const [currentUser, setCurrentUser] = useState('');
     const [reply, setReply] = useState('');
     const [hover, setHover] = useState(false);
-    
+
     const user = auth.currentUser;
     const postId = postID.postId;
+    const navigate = useNavigate();
 
     const onChange = (e) => {
         setReply(e.target.value);
@@ -42,7 +44,7 @@ function WriteReply(postID) {
         try {
             setIsLoading(true);
             //글(문서) Id 
-            
+
             // console.log(postId)
             //해당 글에 대한 댓글 작성을 위해 하위 컬렉션 생성
             const repliesRef = collection(db, 'posts', postId, 'replies');
@@ -79,13 +81,20 @@ function WriteReply(postID) {
                     {user && user.photoURL ? <img src={user.photoURL} alt={user.displayName} /> : ''}
                     <div className='reply'>
                         {user && user.displayName ? <span>{user.displayName}</span> : ''}
-                        <textarea
-                            placeholder='내용을 입력하세요.'
-                            onChange={onChange}
-                            onInput={onInput}
-                            style={{whiteSpace: 'pre-line'}}
-                            value={reply}
-                        />
+                        {user ?
+                            <textarea
+                                placeholder='내용을 입력하세요.'
+                                onChange={onChange}
+                                onInput={onInput}
+                                style={{ whiteSpace: 'pre-line' }}
+                                value={reply}
+                            /> :
+                            <textarea
+                                placeholder='로그인 후 댓글을 작성할 수 있습니다.'
+                                onClick={()=>{navigate('/login')}}
+                                style={{cursor: 'pointer'}}
+                            />
+                        }
                     </div>
                 </div>
                 <>

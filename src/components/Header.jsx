@@ -19,7 +19,6 @@ function Header(props) {
         })
     }, [])
 
-
     //로그인
     const userLogIn = () => {
         googleLogIn().then(setUser);
