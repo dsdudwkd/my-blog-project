@@ -5,6 +5,7 @@ import DOMPurify from 'dompurify';
 import styled from 'styled-components';
 import SideBar from './SideBar';
 import { useNavigate } from 'react-router-dom';
+import ReactQuill from 'react-quill';
 
 
 function PostList(props) {
@@ -13,7 +14,7 @@ function PostList(props) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        let unsubscribe = null; 
+        let unsubscribe = null;
         const fetchPosts = async () => {
             const postQuery = query(
                 collection(db, 'posts'),
@@ -21,7 +22,7 @@ function PostList(props) {
                 limit(8) //글을 전부 읽고 불러오는 대신 갯수를 한정지어 그 갯수만큼만 불러오기 => 비용 절약할 수 있음 & slice(0, 8) 대신 사용 가능
             );
             //더 이상 데이터를 리슨할 필요가 없으면 이벤트 콜백이 호출되지 않도록 리스너를 분리해야 함(비용 지불 되기 때문)
-            unsubscribe = await onSnapshot((postQuery), (snapshot) =>{
+            unsubscribe = await onSnapshot((postQuery), (snapshot) => {
                 const postArr = snapshot.docs.map((doc) => {
                     const { title, post, createdAt, userId, userName, mainPhotoURL } = doc.data();
                     return {
@@ -37,27 +38,22 @@ function PostList(props) {
                 setPosts(postArr)
             })
         }
-        fetchPosts(); 
+        fetchPosts();
         return () => {
             //useEffect의 cleanup 기능을 이용하여 이 컴포넌트가 사용되지 않을 때(unmount일 때) unsubscribe 함수 호출
             //ex) 유저가 로그아웃 되었거나, 다른 화면에 있을 때
-            if(unsubscribe) unsubscribe(); 
+            if (unsubscribe) unsubscribe();
         }
     }, []);
 
     const details = (postId) => {
         const post = posts.find((p) => p.id === postId);
 
-        if(post){
+        if (post) {
             navigate(`posts/detail/${post.id}`, {
-                state: {...post}
+                state: { ...post }
             })
         }
-    }
-
-    const contentStyle = {
-        color : '#888',
-        backgroundColor: 'transparent'
     }
 
     return (
@@ -66,15 +62,16 @@ function PostList(props) {
 
             <ContentContainer>
                 {posts.map((post) => ( //최대 8개까지만 보이고, 글이 개별적으로 보이게
-                    <ContentList key={post.id} onClick={()=>{details(post.id)}}>
+                    <ContentList key={post.id} onClick={() => { details(post.id) }}>
                         <Title className='title' dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }} />
                         <Details dangerouslySetInnerHTML={{
                             __html: DOMPurify.sanitize(post.post,
                                 {
                                     ALLOWED_TAGS: ['p', 'em', 'span'], //p, em, span 태그만 보이게
-                                    // ALLOWED_ATTR: {span: ["style"], p:["style"], em: ["style"]} //p, em, span 태그에 style 적용되게끔
+                                    ALLOWED_ATTR: {span: ["style"], p:["style"], em: ["style"]} //p, em, span 태그에 style 적용되게끔
                                 })
-                        }}/>
+                        }}
+                        />
                         <PublishedDate dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.createdAt.substring(0, 10))/* 시간을 제외한 날짜만 보이게 */ }} />
                     </ContentList>
                 ))}
@@ -124,7 +121,6 @@ const Details = styled.span`
     max-width: 95%;
     overflow: hidden;
     font-size: 14px;
-    color: #888;
     background-color: transparent;
     display: -webkit-box; 
     -webkit-box-orient: vertical;
@@ -135,6 +131,7 @@ const Details = styled.span`
     margin-bottom: 10px;
     line-height: 25px;
     p{
+        color: #888;
         display: inline;
         em{
             font-style: normal;

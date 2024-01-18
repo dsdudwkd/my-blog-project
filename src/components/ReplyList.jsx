@@ -160,16 +160,20 @@ function ReplyList(post) {
                                 <div>
                                     <p className='writedDate'>{reply.createdAt}</p>
                                 </div>
-                                {currentUser && reply.userId === currentUser.uid ?
-                                    <div className='btns'>
-                                        <button onClick={changeEditForm}>수정</button>
-                                        <button onClick={() => { deleteReply(reply.id) }}>삭제</button>
-                                    </div> :
-                                    <div className='btns'>
+                                <div className='btns'>
+                                    {user && user.isAdmin && (
+                                        <button onClick={() => deleteReply(reply.id)}>삭제</button>
+                                    )}
+                                    {user && !user.isAdmin && user.uid === reply.userId && (
+                                        <>
+                                            <button onClick={() => deleteReply(reply.id)}>삭제</button>
+                                            <button onClick={changeEditForm}>수정</button>
+                                        </>
+                                    )}
+                                    {(!user || user.uid !== reply.userId) && (
                                         <button>신고하기</button>
-                                        {!currentUser && /* admin &&  */<button onClick={() => { deleteReply(reply.id) }}>삭제</button>}
-                                    </div>
-                                }
+                                    )}
+                                </div>
                             </div>
 
                             <form className='editArea' onSubmit={onSubmit} style={{ display: 'none' }}>
@@ -215,13 +219,8 @@ const RepliesList = styled.ul`
     display: flex;
     flex-direction: column;
     margin-bottom: 30px;
-<<<<<<< HEAD
     .replyArea,.editArea{
         position: relative;
-=======
-    position: relative;
-    .replyArea,.editArea{
->>>>>>> 6984149d87a12a1971c0dfa3218f89fd164e60b3
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -285,15 +284,9 @@ const RepliesList = styled.ul`
             flex-direction: column;
             gap: 5px;
             /* padding: 10px 0; */
-<<<<<<< HEAD
             position: absolute;
             top: 40px;
             right: -44px;
-=======
-            position: relative;
-            top: -65px;
-            left: 800px;
->>>>>>> 6984149d87a12a1971c0dfa3218f89fd164e60b3
             border: 1px solid #ECECEC;
             border-radius: 4px;
             background-color: #fff;

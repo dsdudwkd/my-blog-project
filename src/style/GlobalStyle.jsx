@@ -59,6 +59,12 @@ button{
     max-width: 1280px;
     margin: 0 auto;
 }
+.ql-editor > *{
+    cursor: auto;
+}
+.ql-editor ul > li::before {
+    content: none;
+}
 `
 
 export default GlobalStyle;

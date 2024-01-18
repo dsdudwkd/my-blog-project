@@ -11,6 +11,7 @@ import { deleteObject, ref } from 'firebase/storage';
 import EditPost from './EditPost';
 import WriteReply from '../components/WriteReply';
 import Loading from '../components/Loading';
+import ReactQuill from 'react-quill';
 
 
 function PostDetails() {
@@ -30,7 +31,7 @@ function PostDetails() {
     //     // 사용자 데이터가 로딩 중인 경우나 user 정보가 없을 때
     //     return <Loading />
     // }
-    
+
     // console.log(post.id);
     // console.log(post.userId, currentUser.uid);
     const backgroundStyle = {
@@ -76,7 +77,7 @@ function PostDetails() {
     return (
 
         <DetailsWrapper >
-            
+
             {/* style={{background:`url(${post.photoURL}) no-repeat center / cover`}} react에서 inline으로 백그라운드 넣는 법 */}
             <Title className='title' style={backgroundStyle}>
                 <h2>{post.title}</h2>
@@ -90,10 +91,18 @@ function PostDetails() {
             </Title>
             <Container className='container'>
                 <SideBar />
-                <Post >
-                    <p dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(post.post)
-                    }} />
+                <Post>
+                    {/* <div className='ql-editor'>
+                        <p dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(post.post)
+                        }} />
+                    </div> */}
+                    <ReactQuill 
+                        value={post.post}
+                        readOnly={true}
+                        theme={"bubble"} 
+                    />
+
 
                     <WriteReply postId={post.id} />{/* 문서 id 값 전달 */}
                 </Post>
@@ -112,6 +121,7 @@ export default PostDetails;
 
 const DetailsWrapper = styled.div`
     overflow: hidden;
+    position: relative;
 `
 const Title = styled.div`
     padding: 100px 50px 50px;
@@ -121,9 +131,7 @@ const Title = styled.div`
     font-family: Noto Sans KR;
     text-align: left;
     box-sizing: border-box;
-    /* background-image: url('/testimage.jpg'); */
-    
-    
+        
     h2{
         font-size: 34px;
         color: #fff;
@@ -171,7 +179,7 @@ const Button = styled.div`
     gap: 5px;
     padding: 10px 0;
     position: absolute;
-    top: 300px;
+    top: 200px;
     left: 200px;
     border: 1px solid #ECECEC;
     border-radius: 4px;
