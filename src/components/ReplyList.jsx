@@ -215,8 +215,8 @@ const RepliesList = styled.ul`
     display: flex;
     flex-direction: column;
     margin-bottom: 30px;
-    position: relative;
     .replyArea,.editArea{
+        position: relative;
         display: flex;
         flex-direction: column;
         gap: 0;
@@ -280,9 +280,9 @@ const RepliesList = styled.ul`
             flex-direction: column;
             gap: 5px;
             /* padding: 10px 0; */
-            position: relative;
-            top: -65px;
-            left: 800px;
+            position: absolute;
+            top: 40px;
+            right: -44px;
             border: 1px solid #ECECEC;
             border-radius: 4px;
             background-color: #fff;

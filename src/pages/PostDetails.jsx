@@ -16,7 +16,7 @@ import Loading from '../components/Loading';
 function PostDetails() {
     const post = useLocation().state;
     const [show, setShow] = useState(false);
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState('');
     const currentUser = auth.currentUser;
     const navigate = useNavigate();
 
@@ -83,7 +83,7 @@ function PostDetails() {
                 <div>
                     <span>{post.userName}</span>
                     <span>{post.createdAt}</span>
-                    {currentUser && currentUser.uid === post.userId ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게
+                    {currentUser && user.isAdmin ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게 => 어차피 관리자만 작성하므로 관리자인 경우에만 버튼 보이게 수정
                         (<VscKebabVertical className='svg' onClick={handleBtn} />) : null
                     }
                 </div>
