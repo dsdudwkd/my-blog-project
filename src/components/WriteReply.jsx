@@ -77,7 +77,7 @@ function WriteReply(postID) {
             <h2 className='replyTitle'>댓글</h2>
             <ReplyList postId={postId} />
             <form onSubmit={onSubmit}>
-                <div className='replyArea'>
+                <div className='writeReplyArea'>
                     {user && user.photoURL ? <img src={user.photoURL} alt={user.displayName} /> : ''}
                     <div className='reply'>
                         {user && user.displayName ? <span>{user.displayName}</span> : ''}
@@ -124,7 +124,7 @@ const ReplyWrapper = styled.div`
         color: #444;
         border-bottom: 1px solid #dedede;
     }
-    .replyArea{
+    .writeReplyArea{
         display: flex;
         gap: 10px;
         font-family: Noto Sans KR;

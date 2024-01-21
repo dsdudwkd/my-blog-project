@@ -67,6 +67,18 @@ function ReplyList(post) {
         }
 
     };
+    
+    //외부 클릭하면 btns 영역 사라지게
+    const handleBodyClick = (e) => {
+        const btns = document.querySelectorAll('.btns');
+    
+        if (!Array.from(btns).some(btn => btn.contains(e.target))) {
+            btns.forEach(btn => {
+                btn.style.display = 'none';
+            });
+            document.body.removeEventListener('click', handleBodyClick);
+        }
+    };
 
     //수정 삭제 버튼 박스 토글 형식으로 + 해당 댓글에만
     const handleButton = (event) => {
@@ -74,31 +86,30 @@ function ReplyList(post) {
         const btns = replyArea.querySelector('.btns');
 
         if (btns) {
+            document.querySelectorAll('.btns').forEach(otherBtns => {
+                otherBtns.style.display = 'none';
+            });
             btns.style.display = show ? 'none' : 'flex';
             setShow(!show);
         }
+        document.body.addEventListener('click', handleBodyClick);
         event.stopPropagation(); // 이벤트가 부모 요소로 전파되지 않도록 방지
     };
 
     //수정 버튼 누르면 editArea 부분 보이게
-    const changeEditForm = (that) => {
-        const editArea = document.querySelector('.editArea');
-        const replyArea = document.querySelector('.replyArea');
-        // replyArea.forEach((el, index)=> console.log(el[index] === that))
-        editArea.style.display = 'flex';
-        replyArea.style.display = 'none';
+    const changeEditForm = (e) => {
+        //e.currentTarget.parentElement.parentElement = replyArea
+        e.currentTarget.parentElement.parentElement.style.display = 'none';
+        //e.currentTarget.parentElement.parentElement.nextSibling = editArea
+        e.currentTarget.parentElement.parentElement.nextSibling.style.display = 'flex';
     }
 
     //취소 버튼 누르면 editArea 사라지게
-    const cancelEdit = (event) => {
-        const editArea = document.querySelector('.editArea');
-        // const replyArea = event.currentTarget.closest('.replyArea');
-        const replyArea = document.querySelector('.replyArea');
-        editArea.style.display = 'none';
-        replyArea.style.display = 'flex';
-        const btns = replyArea.querySelector('.btns');
-        btns.style.display = 'none';
-
+    const cancelEdit = (e) => {
+        //e.currentTarget.parentElement.parentElement = editArea
+        e.currentTarget.parentElement.parentElement.style.display = 'none';
+        //e.currentTarget.parentElement.parentElement.previousSibling = replyArea
+        e.currentTarget.parentElement.parentElement.previousSibling.style.display = 'flex';
     }
 
     //수정 이벤트
@@ -161,13 +172,13 @@ function ReplyList(post) {
                                     <p className='writedDate'>{reply.createdAt}</p>
                                 </div>
                                 <div className='btns'>
-                                    {user && user.isAdmin && (
+                                    {user && user.isAdmin && user.uid !== reply.userId && (
                                         <button onClick={() => deleteReply(reply.id)}>삭제</button>
                                     )}
-                                    {user && !user.isAdmin && user.uid === reply.userId && (
+                                    {user && user.uid === reply.userId && (
                                         <>
+                                            <button className='editBtn' onClick={changeEditForm}>수정</button>
                                             <button onClick={() => deleteReply(reply.id)}>삭제</button>
-                                            <button onClick={changeEditForm}>수정</button>
                                         </>
                                     )}
                                     {(!user || user.uid !== reply.userId) && (
@@ -175,7 +186,8 @@ function ReplyList(post) {
                                     )}
                                 </div>
                             </div>
-
+                            
+                            {/* 수정하기 form */}
                             <form className='editArea' onSubmit={onSubmit} style={{ display: 'none' }}>
                                 <div className='inner'>
                                     <div className='img'>
@@ -194,7 +206,7 @@ function ReplyList(post) {
                                 </div>
                                 <div className='editBtns'>
                                     <button className='cancelEdit' onClick={cancelEdit}>취소</button>
-                                    <button>등록</button>
+                                    <button className='submitEdit'>등록</button>
                                 </div>
                             </form>
 
@@ -305,13 +317,18 @@ const RepliesList = styled.ul`
         textarea{
             width: calc(100% - 50px);
             max-height: 300px;
+            padding: 12px;
             border-radius: 8px;
+            box-sizing: border-box;
         }
         .editBtns{
-            display: flex;
-            justify-content: flex-end;
+            position: relative;
+            margin-left: 535px;
             button{
                 display: inline;
+            }
+            .submitEdit{
+                    margin-left: 5px;
             }
             
         }
