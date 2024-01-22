@@ -7,7 +7,7 @@ import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
 import { FaPlus } from "react-icons/fa";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MdPhotoCamera } from "react-icons/md";
 
 
@@ -34,9 +34,9 @@ const EditPost = () => {
     };
 
     const writePost = (content) => {
-        const editPostContent = content;  // Use the provided Delta object
-        postInfo.post = editPostContent;  // Update the postInfo.post directly (optional)
-        setPost(editPostContent);  // Update the state
+        const editPostContent = content;
+        postInfo.post = editPostContent;
+        setPost(editPostContent);
     };
 
     useEffect(() => {
@@ -131,7 +131,7 @@ const EditPost = () => {
                 await updateDoc(updateDocRef, {
                     mainPhotoURL: url
                 })
-            } else{
+            } else {
                 await setDoc(updateDocRef, {
                     title: postInfo.title || title,
                     post: postInfo.post || post,
@@ -141,15 +141,14 @@ const EditPost = () => {
                     mainPhotoURL: postInfo.mainPhotoURL || mainFile
                 });
             }
-
+            
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
-            navigate('/');
+            navigate(`posts/detail/${postInfo.id}`);
         }
     }
-
 
     return (
         <PostWrapper>
@@ -196,9 +195,7 @@ const EditPost = () => {
                             </label>
                             <input type="file" id='representitiveImg' accept='image/*' onChange={onFileChange} style={{ display: 'none' }} />
                         </div>
-
                     </div>
-
                     <div>
                         <ReactQuill
                             ref={quillRef}
@@ -210,10 +207,7 @@ const EditPost = () => {
                             value={postInfo.post}
                             onChange={writePost}
                         />
-
                     </div>
-
-
                     <button className='submitBtn'>
                         {isLoading ? '업로드 중..' : '완료'}
                     </button>

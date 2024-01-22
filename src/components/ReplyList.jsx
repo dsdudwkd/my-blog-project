@@ -1,6 +1,6 @@
 import { addDoc, collection, deleteDoc, doc, onSnapshot, orderBy, query, setDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { admin, auth, db, onUserState } from '../api/firebase';
 import { VscKebabVertical } from "react-icons/vsc";
@@ -13,6 +13,7 @@ function ReplyList(post) {
     const [show, setShow] = useState(false);
     const [hover, setHover] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
 
     const postID = post.postId;
     const currentUser = auth.currentUser;
@@ -51,8 +52,6 @@ function ReplyList(post) {
             if (unSubscribe) unSubscribe();
         }
     }, []);
-    // replies.map((el)=>console.log(el.id))
-
 
     // 삭제 이벤트
     const deleteReply = async (replyId) => {
@@ -115,10 +114,9 @@ function ReplyList(post) {
     //수정 이벤트
     const editReply = (e, replyId) => {
         const replyInfo = replies.find((el) => el.id === replyId);
-        console.log(replyInfo)
-
-        const changeReply = e.target;
-        console.log(changeReply)
+        // console.log(replyInfo)
+        const changeReply = e.target.value;
+        // console.log(changeReply)
         replyInfo.reply = changeReply;
         setEdit(changeReply);
     }
@@ -133,12 +131,22 @@ function ReplyList(post) {
     const onSubmit = async (e, replyId) => {
         e.preventDefault();
         const replyID = replies.find((el) => el.id === replyId);
+        
         if (!currentUser || edit === '' || isLoading) return;
-
         try {
-            const updateDocRef = doc(db, 'posts', postID, 'replies', replyID.id)
+            setIsLoading(true)
+            const updateDocRef = doc(db, 'posts', postID, 'replies', replyID.id);
+            await setDoc(updateDocRef, {
+                createdAt: replyID.createdAt,
+                reply: replyID.reply || edit,
+                userId: replyID.userId,
+                userImage: replyID.userImage,
+                userName: replyID.userName
+            })
         } catch (error) {
             console.error(error);
+        } finally{
+            setIsLoading(false);
         }
     }
 
@@ -188,7 +196,7 @@ function ReplyList(post) {
                             </div>
                             
                             {/* 수정하기 form */}
-                            <form className='editArea' onSubmit={onSubmit} style={{ display: 'none' }}>
+                            <form className='editArea' onSubmit={(e)=>{onSubmit(e, reply.id)}} style={{ display: 'none' }}>
                                 <div className='inner'>
                                     <div className='img'>
                                         {reply.userImage ? (<img src={reply.userImage} alt={reply.userName} />) : ('')}
@@ -200,8 +208,8 @@ function ReplyList(post) {
                                 <div>
                                     <textarea
                                         className='content'
-                                        value={edit}
-                                        onChange={(e) => { editReply(e, reply.id) }}
+                                        value={reply.reply}
+                                        onChange={(event) => { editReply(event, reply.id)}}
                                     />
                                 </div>
                                 <div className='editBtns'>
@@ -209,15 +217,10 @@ function ReplyList(post) {
                                     <button className='submitEdit'>등록</button>
                                 </div>
                             </form>
-
                         </li>
-
-
-
                     ))}
                 </>
             </RepliesList>
-
         </RepliesWrapper>
     );
 }
@@ -323,12 +326,20 @@ const RepliesList = styled.ul`
         }
         .editBtns{
             position: relative;
-            margin-left: 535px;
+            height: 44px;
             button{
-                display: inline;
+                margin-top: 5px;
             }
             .submitEdit{
-                    margin-left: 5px;
+                position: absolute;
+                top: 0;
+                right: 105px;
+                margin-left: 5px;
+            }
+            .cancelEdit{
+                position: absolute;
+                top: 0;
+                right: 0px;
             }
             
         }

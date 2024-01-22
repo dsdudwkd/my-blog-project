@@ -16,6 +16,7 @@ import ReactQuill from 'react-quill';
 
 function PostDetails() {
     const post = useLocation().state;
+    console.log(post)
     const [show, setShow] = useState(false);
     const [user, setUser] = useState('');
     const currentUser = auth.currentUser;
@@ -35,10 +36,10 @@ function PostDetails() {
     // console.log(post.id);
     // console.log(post.userId, currentUser.uid);
     const backgroundStyle = {
-        background: post.mainPhotoURL ? `url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
+        background: post && post.mainPhotoURL ? `url(${post.mainPhotoURL}) no-repeat center / cover` : '#666',
         //배경색 이미지와 혼합하여 사용하기
-        backgroundColor: post.mainPhotoURL ? '#cccccc' : '#666',
-        backgroundBlendMode: post.mainPhotoURL ? 'multiply' : '#666', //https://webisfree.com/2015-09-23/%5Bcss%5D-background-blend-mode-%EC%9D%B4%EB%AF%B8%EC%A7%80%EC%99%80-%EB%B0%B0%EA%B2%BD%EC%83%89-%ED%98%BC%ED%95%A9%ED%95%98%EA%B8%B0 참조
+        backgroundColor: post && post.mainPhotoURL ? '#cccccc' : '#666',
+        backgroundBlendMode: post && post.mainPhotoURL ? 'multiply' : '#666', //https://webisfree.com/2015-09-23/%5Bcss%5D-background-blend-mode-%EC%9D%B4%EB%AF%B8%EC%A7%80%EC%99%80-%EB%B0%B0%EA%B2%BD%EC%83%89-%ED%98%BC%ED%95%A9%ED%95%98%EA%B8%B0 참조
     };
 
     //수정 삭제 버튼 박스 토글 형식으로 
@@ -80,10 +81,10 @@ function PostDetails() {
 
             {/* style={{background:`url(${post.photoURL}) no-repeat center / cover`}} react에서 inline으로 백그라운드 넣는 법 */}
             <Title className='title' style={backgroundStyle}>
-                <h2>{post.title}</h2>
+                {post && <h2>{post.title}</h2>}
                 <div>
-                    <span>{post.userName}</span>
-                    <span>{post.createdAt}</span>
+                    {post && <span>{post.userName}</span>}
+                    {post && <span>{post.createdAt}</span>}
                     {currentUser && user.isAdmin ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게 => 어차피 관리자만 작성하므로 관리자인 경우에만 버튼 보이게 수정
                         (<VscKebabVertical className='svg' onClick={handleBtn} />) : null
                     }
@@ -97,20 +98,26 @@ function PostDetails() {
                             __html: DOMPurify.sanitize(post.post)
                         }} />
                     </div> */}
-                    <ReactQuill 
-                        value={post.post}
-                        readOnly={true}
-                        theme={"bubble"} 
-                    />
+                    {post &&
+                        <ReactQuill
+                            value={post.post}
+                            readOnly={true}
+                            theme={"bubble"}
+                        />
+                    }
 
 
-                    <WriteReply postId={post.id} />{/* 문서 id 값 전달 */}
+                    {post && <WriteReply postId={post.id} />}{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
-                    <button onClick={editPost}>
-                        수정
-                    </button>
-                    <button onClick={deletePost}>삭제</button>
+                    {post && post.userId === currentUser.uid && (
+                        <>
+                            <button onClick={editPost}>
+                                수정
+                            </button>
+                            <button onClick={deletePost}>삭제</button>
+                        </>
+                    )}
                 </Button>
             </Container>
         </DetailsWrapper>
