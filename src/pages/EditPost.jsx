@@ -7,7 +7,7 @@ import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
 import { FaPlus } from "react-icons/fa";
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MdPhotoCamera } from "react-icons/md";
 
 
@@ -23,6 +23,8 @@ const EditPost = () => {
     const quillRef = useRef(null);
     const navigate = useNavigate();
     const postInfo = useLocation().state;
+    const { postId } = useParams();
+    console.log(postInfo)
 
 
     // console.log(posts.title);
@@ -38,6 +40,12 @@ const EditPost = () => {
         postInfo.post = editPostContent;
         setPost(editPostContent);
     };
+
+    useEffect(() => {
+        // 기존 글 데이터를 가져와서 표시
+        setTitle(postInfo.title);
+        setPost(postInfo.post);
+    }, [postInfo.title, postInfo.post]);
 
     useEffect(() => {
         const editor = quillRef.current.getEditor();
@@ -75,6 +83,46 @@ const EditPost = () => {
             }
         });
     };
+    
+
+    // const uploadAndInsertImage = async (file) => {
+    //     try {
+    //         const maxSize = 1024 * 1024 - 89; // 1MB (원하는 최대 크기로 설정)
+    
+    //         // 이미지를 Firebase Storage에 업로드
+    //         const storagePath = `post/${user.uid}-${user.displayName}/${file.name}`;
+    //         const fileRef = storageRef(storage, storagePath);
+    //         const snapshot = await uploadBytes(fileRef, file);
+    
+    //         // 업로드된 이미지의 다운로드 URL 가져오기
+    //         const imageUrl = await getDownloadURL(snapshot.ref);
+    
+    //         // 이미지 크기 조절
+    //         const resizedImageUrl = await resizeImage(imageUrl, 800, 600); // 원하는 크기로 조절
+    
+    //         // Quill Editor에 이미지 추가
+    //         const editor = quillRef.current?.getEditor();
+    //         if (editor) {
+    //             const range = editor.getSelection(true);
+    //             editor.insertEmbed(range.index, "image", resizedImageUrl);
+    //             editor.setSelection(range.index + 1);
+    //         }
+    //     } catch (error) {
+    //         console.error("이미지 업로드 및 추가 오류:", error);
+    //     }
+    // };
+
+    // 이미지 업로드 핸들러
+    // const imageHandler = () => {
+    //     const input = document.createElement("input");
+    //     input.setAttribute("type", "file");
+    //     input.setAttribute("accept", "image/*");
+    //     input.click();
+    //     input.addEventListener("change", async () => {
+    //         const file = input.files[0];
+    //         uploadAndInsertImage(file);
+    //     });
+    // };
     const onFileChange = (e) => {
         const { files } = e.target;
         postInfo.mainPhotoURL = files;
@@ -141,12 +189,13 @@ const EditPost = () => {
                     mainPhotoURL: postInfo.mainPhotoURL || mainFile
                 });
             }
-            
+
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
-            navigate(`posts/detail/${postInfo.id}`);
+            // navigate(`/posts/detail/${postInfo.id}`);
+            navigate(`/`);
         }
     }
 

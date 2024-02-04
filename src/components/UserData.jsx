@@ -12,7 +12,7 @@ function UserData({ user: { photoURL, displayName } }) {
         onUserState((user) => {
             setUser(user);
         })
-    }, []);
+    },[]);
 
     return (
         <UserDataWrapper>
@@ -33,11 +33,8 @@ export const UserDataWrapper = styled.div`
         /* gap: 6px; */
         img{
             width: 36px;
+            height: 36px;
             border-radius: 100%;
         }
     }
-    .profileImg{
-
-    }
-    
 `

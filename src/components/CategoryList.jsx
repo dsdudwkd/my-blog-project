@@ -1,5 +1,4 @@
 import React from 'react';
-import ShowCategory from './ShowCategory';
 
 function CategoryList() {
     return (

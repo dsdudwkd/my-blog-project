@@ -130,13 +130,13 @@ const Details = styled.span`
     text-overflow: ellipsis; //말줄임표
     margin-bottom: 10px;
     line-height: 25px;
-    p{
+    p,em,span{
         color: #888;
         display: inline;
-        em{
+        font-family: Noto Sans KR;
             font-style: normal;
-        }
     }
+    
     
 `
 

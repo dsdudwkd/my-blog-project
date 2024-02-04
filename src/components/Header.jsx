@@ -5,7 +5,6 @@ import main_name from '../img/main_name.png';
 import styled from 'styled-components';
 import { useAuthContext } from '../context/AuthContext';
 import UserData from './UserData';
-import CategoryMenu from './CategoryMenu';
 import { IoSearch } from "react-icons/io5";
 
 function Header(props) {
@@ -17,7 +16,7 @@ function Header(props) {
         onUserState((user) => {
             setUser(user);
         })
-    }, [])
+    }, []);
 
     //로그인
     const userLogIn = () => {

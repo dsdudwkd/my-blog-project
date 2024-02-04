@@ -126,22 +126,22 @@ export async function loginEmail(email, password) {
 }
 
 //파이어베이스에 카테고리 연동
-export async function addCategory(category) {
-    const id = uuid();
-    return await addDoc(collection(db, 'categories'), {
-        mainCategory: category,
-    });
-}
+// export async function addCategory(category) {
+//     const id = uuid();
+//     return await addDoc(collection(db, 'categories'), {
+//         mainCategory: category,
+//     });
+// }
 
 //연동된 카테고리 가져오기
-export async function getCategories() {
-    return get(ref(database, 'category')).then((snapShot) => {
-        if (snapShot.exists()) {
-            return Object.values(snapShot.val());
-        } else {
-            return []
-        }
-    })
-}
+// export async function getCategories() {
+//     return get(ref(database, 'category')).then((snapShot) => {
+//         if (snapShot.exists()) {
+//             return Object.values(snapShot.val());
+//         } else {
+//             return []
+//         }
+//     })
+// }
 
 export default firebase;

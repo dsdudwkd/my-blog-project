@@ -1,35 +1,17 @@
 import React, { useRef, useState } from 'react';
-import { addCategory } from '../api/firebase';
+import { addCategory, db } from '../api/firebase';
 import { styled } from 'styled-components';
 import CategoryList from '../components/CategoryList';
 import { FaPlus } from "react-icons/fa";
+import { addDoc, collection } from 'firebase/firestore';
 
 function AddCategory(props) {
 
-    const [category, setCategory] = useState([]);
-    const [newCategory, setNewCategory] = useState('');
+    const [category, setCategory] = useState('');
+    // const [newCategory, setNewCategory] = useState('');
 
-    const addMainCategory = () => {
-        const newCategoryItem = {
-            name: newCategory,
-            subCategoryItem: []
-        };
-        setCategory([...category, newCategoryItem]);
-        setNewCategory('');
-    }
-
-    const addSubCategory = (categoryIndex, subCategoryName) => {
-        if (!subCategoryName) return;
-
-        setCategory(category.map((el, index) => {
-            if (index === categoryIndex) {
-                return {
-                    ...el,
-                    subCategoryItem: [...el.subCategoryItem, { name: subCategoryName }],
-                }
-            }
-            return el;
-        }));
+    const addMainCategory = (e) => {
+        setCategory(e.target.value);
     }
 
     const cancelAdd = () => {
@@ -44,13 +26,16 @@ function AddCategory(props) {
 
     const onSubmit = async (e) => {
         e.preventDefault();
-
+        
         try {
-            await addCategory(category);
-            setCategory([]);
-            setNewCategory('');
+            await addDoc(collection(db, "categories"),{
+                category: category
+            })
         } catch (error) {
             console.error(error);
+        }finally{
+            setCategory('');
+
         }
     }
 
@@ -68,15 +53,15 @@ function AddCategory(props) {
                         type="text"
                         name="title"
                         placeholder='메인 카테고리'
-                        onChange={(e) => setNewCategory(e.target.value)}
+                        onChange={addMainCategory}
                     />
                     <div className='buttons'>
                         <button onClick={cancelAdd} >취소</button>
-                        <button type="submit" disabled={newCategory.length < 1} onClick={addMainCategory} >등록</button>
+                        <button disabled={category.length < 1}>등록</button>
                     </div>
                 </div>
             </Form>
-            <CategoryList category={category} addSubCategory={addSubCategory} />
+            {/* <CategoryList /> */}
         </CategoryWrapper>
     );
 }

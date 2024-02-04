@@ -183,7 +183,7 @@ const ReplyWrapper = styled.div`
             color: #fff;
         }
         .colorChange{
-            background-color: #49633a;
+            background-color: #5d94a4;
             color: #fff;
         }
     

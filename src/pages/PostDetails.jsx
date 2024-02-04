@@ -16,7 +16,7 @@ import ReactQuill from 'react-quill';
 
 function PostDetails() {
     const post = useLocation().state;
-    console.log(post)
+    // console.log(post)
     const [show, setShow] = useState(false);
     const [user, setUser] = useState('');
     const currentUser = auth.currentUser;
@@ -110,7 +110,7 @@ function PostDetails() {
                     {post && <WriteReply postId={post.id} />}{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
-                    {post && post.userId === currentUser.uid && (
+                    {post && (
                         <>
                             <button onClick={editPost}>
                                 수정

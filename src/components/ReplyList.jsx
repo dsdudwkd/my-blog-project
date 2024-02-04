@@ -131,8 +131,12 @@ function ReplyList(post) {
     const onSubmit = async (e, replyId) => {
         e.preventDefault();
         const replyID = replies.find((el) => el.id === replyId);
-        
         if (!currentUser || edit === '' || isLoading) return;
+
+        //수정 후 수정된 글 보이게 하기
+        e.currentTarget.style.display = 'none';
+        e.currentTarget.previousSibling.style.display = 'flex';
+
         try {
             setIsLoading(true)
             const updateDocRef = doc(db, 'posts', postID, 'replies', replyID.id);
@@ -143,7 +147,8 @@ function ReplyList(post) {
                 userImage: replyID.userImage,
                 userName: replyID.userName
             })
-        } catch (error) {
+        } 
+        catch (error) {
             console.error(error);
         } finally{
             setIsLoading(false);
@@ -214,7 +219,9 @@ function ReplyList(post) {
                                 </div>
                                 <div className='editBtns'>
                                     <button className='cancelEdit' onClick={cancelEdit}>취소</button>
-                                    <button className='submitEdit'>등록</button>
+                                    <>
+                                        {reply.reply.length < 1? <button className='disabled' disabled style={{cursor : 'not-allowed'}} >등록</button> : <button className='submitEdit'>등록</button>}
+                                    </>
                                 </div>
                             </form>
                         </li>
@@ -282,6 +289,7 @@ const RepliesList = styled.ul`
             margin-left: 50px;
             line-height: 1.3;
             font-size: 14px;
+            font-family: Noto Sans KR;
             resize: none;
         }
         .writedDate{
@@ -323,23 +331,33 @@ const RepliesList = styled.ul`
             padding: 12px;
             border-radius: 8px;
             box-sizing: border-box;
+            font-family: Noto Sans KR;
         }
         .editBtns{
             position: relative;
             height: 44px;
             button{
                 margin-top: 5px;
+                
             }
-            .submitEdit{
+            .submitEdit, .disabled{
                 position: absolute;
                 top: 0;
                 right: 105px;
                 margin-left: 5px;
             }
+            .submitEdit{
+                background-color: black;
+                color: #fff;
+                &:hover{
+                    background-color: #5d94a4;
+                }
+            }
             .cancelEdit{
                 position: absolute;
                 top: 0;
                 right: 0px;
+                color: #333;
             }
             
         }
