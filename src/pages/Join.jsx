@@ -9,7 +9,6 @@ import { FirebaseError } from 'firebase/app';
 function Join(props) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
-    // const [authNum, setAuthNum] = useState('');
     const [pw, setPw] = useState('');
     const [pw2, setPw2] = useState('');
 
@@ -65,8 +64,6 @@ function Join(props) {
 
     };
 
-
-
     return (
         <JoinWrapper>
             <div className='container'>
@@ -105,15 +102,9 @@ function Join(props) {
                                     }
                                 }}
                             />
-                            {/* <button className='emailAuthBtn' onClick={sendEmail}>인증하기</button> */}
                             {duplicatedErr && <span>{duplicatedErr}</span> || emailErr && <span>{emailErr}</span>}
-                            { }
                         </div>
                     </div>}
-                    {/* <div className='emailAuthWrap wrap'>
-                        <label htmlFor="emailAuthText">인증번호</label>
-                        <input type="text" id='emailAuthText' placeholder='인증번호를 입력하세요' value={authNum} />
-                    </div> */}
                     <div className='pwWrap wrap'>
                         <label htmlFor="password">비밀번호</label>
                         <div>
@@ -145,8 +136,6 @@ function Join(props) {
                                 value={pw2}
                                 onChange={(e) => { setPw2(e.target.value) }}
                                 onBlur={() => {
-                                    // const pw = document.getElementById('password').value;
-                                    // const pw2 = document.getElementById('passwordConfirm').value;
                                     if (pw !== pw2) {
                                         return setPwConfirmErr('비밀번호가 일치하지 않습니다.');
 
@@ -162,7 +151,6 @@ function Join(props) {
                         </div>
                     </div>
                     <button type='submit' className='joinBtn'>가입하기</button>
-
                 </form>
             </div>
         </JoinWrapper>

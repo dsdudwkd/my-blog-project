@@ -34,6 +34,7 @@ export const UserDataWrapper = styled.div`
         img{
             width: 36px;
             height: 36px;
+            border: 1px solid #ecebeb;
             border-radius: 100%;
         }
     }

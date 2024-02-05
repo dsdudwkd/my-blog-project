@@ -1,7 +1,6 @@
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { ImageResize } from "quill-image-resize";
-Quill.register("modules/ImageResize", ImageResize);
+
 
 export const modules = {
     toolbar: [
@@ -18,10 +17,6 @@ export const modules = {
         ["blockquote", "code-block"],
         ["clean"],
     ],
-    ImageResize: {
-        parchment: Quill.import("parchment"),
-        modules: ["Resize", "DisplaySize"],
-      },
 
 };
 export const formats = [
