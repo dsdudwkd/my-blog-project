@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import { useAuthContext } from '../context/AuthContext';
 import UserData from './UserData';
 import { IoSearch } from "react-icons/io5";
+import Search from '../pages/Search';
 
 function Header(props) {
 
@@ -39,9 +40,10 @@ function Header(props) {
                 {/* <CategoryMenu /> */}
             </nav>
             <div className='userWrapper'>
-                <Link to='/search'>
+                {/* <Link to='/search'>
                     <IoSearch className='search' />
-                </Link>
+                </Link> */}
+                <Search />
 
                 {user && user.isAdmin && (
                     <>

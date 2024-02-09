@@ -23,16 +23,12 @@ const EditPost = () => {
     const quillRef = useRef(null);
     const navigate = useNavigate();
     const postInfo = useLocation().state;
-    const { postId } = useParams();
-    console.log(postInfo)
-
 
     // console.log(posts.title);
     const writeTitle = (e) => {
         const editTitle = e.target.value; //useState로 관리되는 상태를 직접 수정하면 리액트가 상태 업데이트를 감지하지 못할 수 있습니다. 
         postInfo.title = editTitle;
         setTitle(editTitle);
-
     };
 
     const writePost = (content) => {
@@ -83,23 +79,23 @@ const EditPost = () => {
             }
         });
     };
-    
+
 
     // const uploadAndInsertImage = async (file) => {
     //     try {
     //         const maxSize = 1024 * 1024 - 89; // 1MB (원하는 최대 크기로 설정)
-    
+
     //         // 이미지를 Firebase Storage에 업로드
     //         const storagePath = `post/${user.uid}-${user.displayName}/${file.name}`;
     //         const fileRef = storageRef(storage, storagePath);
     //         const snapshot = await uploadBytes(fileRef, file);
-    
+
     //         // 업로드된 이미지의 다운로드 URL 가져오기
     //         const imageUrl = await getDownloadURL(snapshot.ref);
-    
+
     //         // 이미지 크기 조절
     //         const resizedImageUrl = await resizeImage(imageUrl, 800, 600); // 원하는 크기로 조절
-    
+
     //         // Quill Editor에 이미지 추가
     //         const editor = quillRef.current?.getEditor();
     //         if (editor) {
@@ -160,42 +156,71 @@ const EditPost = () => {
             alert("본문을 입력해주세요.");
             return;
         }
+
+        const updatedTitle = title || postInfo.title; // 수정하지 않았다면 기존 값을 사용
+        const updatedPost = post || postInfo.post; // 수정하지 않았다면 기존 값을 사용
+
+        //     try {
+        //         setIsLoading(true);
+        //         const updateDocRef = doc(db, 'posts', `${postInfo.id}`);
+
+        //         await setDoc(updateDocRef, {
+        //             title: postInfo.title || title,
+        //             post: postInfo.post || post,
+        //             createdAt: postInfo.createdAt,
+        //             userId: user.uid,
+        //             userName: user.displayName || "익명"
+        //         });
+        //         if (mainFile) {
+        //             const locationRef = ref(storage, `post/${user.uid}/${postInfo.id}`)
+        //             const snapShot = await uploadBytes(locationRef, mainFile);
+        //             const url = await getDownloadURL(snapShot.ref);
+
+        //             await updateDoc(updateDocRef, {
+        //                 mainPhotoURL: url
+        //             })
+        //         } else {
+        //             await setDoc(updateDocRef, {
+        //                 title: postInfo.title || title,
+        //                 post: postInfo.post || post,
+        //                 createdAt: postInfo.createdAt,
+        //                 userId: user.uid,
+        //                 userName: user.displayName || "익명",
+        //                 mainPhotoURL: postInfo.mainPhotoURL || mainFile
+        //             });
+        //         }
+
+        //     } catch (error) {
+        //         console.error(error);
+        //     } finally {
+        //         setIsLoading(false);
+        //         // navigate(`/posts/detail/${postInfo.id}`);
+        //         navigate(`/`);
+        //     }
+        // }
+
         try {
             setIsLoading(true);
-            const updateDocRef = doc(db, 'posts', `${postInfo.id}`);
+            const postRef = doc(db, 'posts', postInfo.id);
 
-            await setDoc(updateDocRef, {
-                title: postInfo.title || title,
-                post: postInfo.post || post,
-                createdAt: postInfo.createdAt,
-                userId: user.uid,
-                userName: user.displayName || "익명"
+            await updateDoc(postRef, {
+                title: updatedTitle,
+                post: updatedPost,
+                // 필요한 다른 필드 업데이트
             });
-            if (mainFile) {
-                const locationRef = ref(storage, `post/${user.uid}/${postInfo.id}`)
-                const snapShot = await uploadBytes(locationRef, mainFile);
-                const url = await getDownloadURL(snapShot.ref);
 
-                await updateDoc(updateDocRef, {
-                    mainPhotoURL: url
-                })
-            } else {
-                await setDoc(updateDocRef, {
-                    title: postInfo.title || title,
-                    post: postInfo.post || post,
-                    createdAt: postInfo.createdAt,
-                    userId: user.uid,
-                    userName: user.displayName || "익명",
-                    mainPhotoURL: postInfo.mainPhotoURL || mainFile
-                });
+            if (mainFile) {
+                const fileRef = storageRef(storage, `post/${user.uid}/${postInfo.id}`);
+                const snapshot = await uploadBytes(fileRef, mainFile);
+                const url = await getDownloadURL(snapshot.ref);
+                await updateDoc(postRef, { mainPhotoURL: url });
             }
 
+            navigate(`/posts/detail/${postInfo.id}`);
         } catch (error) {
             console.error(error);
         } finally {
             setIsLoading(false);
-            // navigate(`/posts/detail/${postInfo.id}`);
-            navigate(`/`);
         }
     }
 

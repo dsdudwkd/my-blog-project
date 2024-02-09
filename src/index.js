@@ -17,6 +17,7 @@ import ResetPw from './pages/ResetPw';
 import { auth } from './api/firebase';
 import PostDetails from './pages/PostDetails';
 import EditPost from './pages/EditPost';
+import Loading from './components/Loading';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -38,11 +39,17 @@ const AdminRoute = ({ checkAdmin, children }) => {
 
 //로그인하지 않은 상태면 로그인 페이지로 이동
 const ProtectedRoute = ({ children }) => {
-  const user = auth.currentUser;
-  if (user === null) {
-    return <Navigate to='/login' />
+  // const user = auth.currentUser; // auth.currentUser처럼 바로 값을 받아오는 경우 페이지 이동이나 로드시 상태값이 바로 반영되지 않을 수 있다 
+  const {user, isLoading} = useAuthContext(); //컨텍스트에서 사용자 상태와 로딩상태 가져옴
+  
+  if (isLoading) {
+    return <Loading /> // 로딩 중인 경우 로딩 표시
   }
-  return children
+  
+  if (!user) {
+    return <Navigate to='/login' replace />; // 사용자가 로그인하지 않은 경우 로그인 페이지로 리디렉션
+  }
+  return children; // 사용자가 로그인한 경우 자식 컴포넌트 렌더링
 }
 
 const router = createBrowserRouter([

@@ -1,10 +1,11 @@
 import React from 'react';
+import PostDetails from '../pages/PostDetails';
 
-function SearchList(props) {
+function SearchList({posts : {id, title, post, createdAt, mainPhotoURL} }) {
     return (
-        <div>
-            
-        </div>
+        <li>
+            {/* <PostDetails post={{id, title, post, createdAt, mainPhotoURL}}/> */}
+        </li>
     );
 }
 

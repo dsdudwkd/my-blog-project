@@ -51,6 +51,7 @@ function Join(props) {
             await updateProfile(user, {
                 displayName: name
             })
+            alert('회원가입이 완료 되었습니다.');
             await logOut();
             navigate('/login');
         } catch (error) {

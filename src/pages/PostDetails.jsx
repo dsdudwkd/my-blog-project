@@ -1,4 +1,4 @@
-import { collection, deleteDoc, doc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -15,12 +15,16 @@ import ReactQuill from 'react-quill';
 
 
 function PostDetails() {
-    const post = useLocation().state;
+    // const post = useLocation().state;
     // console.log(post)
     const [show, setShow] = useState(false);
     const [user, setUser] = useState('');
+    const [post, setPost] = useState(null);
     const currentUser = auth.currentUser;
+    const [isLoading, setIsLoading] = useState(true);
+    const { id } = useParams(); // URL에서 게시글 ID 추출 추가
     const navigate = useNavigate();
+    console.log(id)
 
     useEffect(() => {
         onUserState((user) => {
@@ -28,10 +32,36 @@ function PostDetails() {
         })
     }, [])
 
-    // if (!user || !currentUser) {
-    //     // 사용자 데이터가 로딩 중인 경우나 user 정보가 없을 때
-    //     return <Loading />
-    // }
+     //추가
+     useEffect(() => {
+        const fetchPost = async () => {
+            setIsLoading(true);
+            try {
+                const docRef = doc(db, 'posts', id);
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    setPost({ id: docSnap.id, ...docSnap.data() }); //docSnap.id와 docSnap.data()를 사용하여 문서 ID와 데이터를 추출하고 이 데이터로 post 상태를 설정합니다.
+                } else {
+                    console.log("게시글이 없습니다.");
+                    navigate('/'); // 문서가 없을 경우 홈으로 리다이렉트
+                }
+            } catch (error) {
+                console.error(error);
+            }
+            setIsLoading(false);
+        };
+
+        fetchPost();
+    }, [id, navigate]); // 'id' 매개변수가 변경되거나(일반적으로 다른 게시물로 이동할 때 발생함) 'navigate' 기능이 변경될 때마다(일반적으로 구성 요소의 수명 주기 동안 변경되지 않음) 게시물을 다시 가져옴
+
+    if (isLoading) {
+        // 사용자 데이터가 로딩 중인 경우나 user 정보가 없을 때
+        return <Loading />
+    }
+
+    if (!post) {
+        return alert('게시물이 없습니다.'); // 게시글이 없을 경우 처리
+    }
 
     // console.log(post.id);
     // console.log(post.userId, currentUser.uid);
@@ -61,7 +91,6 @@ function PostDetails() {
                 const photoRef = ref(storage, `post/${user.uid}/${post.id}`);
                 await deleteObject(photoRef);
             }
-
             navigate('/');
         } catch (error) {
             console.error(error);
@@ -105,16 +134,12 @@ function PostDetails() {
                             theme={"bubble"}
                         />
                     }
-
-
                     {post && <WriteReply postId={post.id} />}{/* 문서 id 값 전달 */}
                 </Post>
                 <Button className='btns'>
                     {post && (
                         <>
-                            <button onClick={editPost}>
-                                수정
-                            </button>
+                            <button onClick={editPost}>수정</button>
                             <button onClick={deletePost}>삭제</button>
                         </>
                     )}
