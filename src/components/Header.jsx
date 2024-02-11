@@ -26,8 +26,12 @@ function Header(props) {
 
     //로그아웃
     const userLogOut = () => {
-        logOut().then(setUser);
-        navigate('/login');
+        const ok = window.confirm('로그아웃 하시겠습니까?');
+        if (ok) {
+            logOut().then(setUser);
+            navigate('/login');
+        }
+        return;
     }
 
     return (
@@ -40,17 +44,16 @@ function Header(props) {
                 {/* <CategoryMenu /> */}
             </nav>
             <div className='userWrapper'>
-                {/* <Link to='/search'>
+                <Link to='/search'>
                     <IoSearch className='search' />
-                </Link> */}
-                <Search />
+                </Link>
 
                 {user && user.isAdmin && (
                     <>
                         <Link to='/newPost'>
                             <button className='newPostBtn'>글쓰기</button>
                         </Link>
-                        
+
                     </>
 
                 )}

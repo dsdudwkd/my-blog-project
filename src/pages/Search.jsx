@@ -8,176 +8,128 @@ import { BiSearch } from 'react-icons/bi';
 
 function Search(props) {
 
-    const [visible, setVisible] = useState(false);
-    const [clearBtn, setClearBtn] = useState(false); //검색창에 값이 입력됐을 때 나오는 버튼
     const [text, setText] = useState('');
-    const [searchResults, setSearchResults] = useState([]);
+    const [result, setResult] = useState([]);
 
-    /* 
-    useRef() = DOM에 직접 접근하는 hook
-    current로 값을 전달
-    */
-    const searchFormRef = useRef();
+    useEffect(()=>{
+        if(text.trim() === ''){
+            setResult([]);
+        } else {
+            searchPosts(text).then((txt)=>{
+                setResult(txt);
+            }).catch((error)=>{
+                console.error(error);
+            })
+        }
+    }, [text]);
 
-    const toggleInputOpen = (e) => {
-        // 리액트에서는 기본 동작이 기본적으로 중지되지 않으므로 명시적으로 항상 e.preventDefault()를 추가해야 한다
-        e.preventDefault();
-        setVisible(true);
-    }
-
-    useEffect(() => {
-        const onClose = (e) => {
-            if (searchFormRef.current && !searchFormRef.current.contains(e.target)) {
-                setVisible(false);
-                setText('');
-                setClearBtn(false);
+    const searchPosts = async (word) => {
+        try {
+            const q = query(collection(db, "posts"));
+            const querySnapshot = await getDocs(q);
+            if (!querySnapshot.empty) {
+                const matchItem = querySnapshot.docs.map(doc => doc.data())
+                return matchItem.filter(post => post.title.toLowerCase().includes(word.toLowerCase()));
+            } else {
+                return [];
             }
+        } catch (error) {
+            console.error(error);
+            return [];
         }
-        document.addEventListener('click', onClose);
-
-        return () => {
-            document.removeEventListener('click', onClose);
-        }
-    }, []);
-
+    }
+    
     const onChange = (e) => {
         setText(e.target.value);
     }
 
-    const onSubmit = async (e) => {
-        e.preventDefault();
-
-        try {
-            const postsRef = collection(db, "posts");
-            const q = query(postsRef, where("title", "==", text));
-            console.log(q);
-            const querySnapshot = await getDocs(q);
-
-            if (!querySnapshot.empty) {
-                const data = querySnapshot.docs.map(doc => doc.data());
-                setSearchResults(data);
-
-                // if (allPost.length === 0) {
-                //     return []
-                // }
-                /* const matchItem = allPost.filter((post) => {
-                    const itemTitle = post.title.toLowerCase(); //받아온 문자열이 영어면 소문자로 변환
-                    // console.log(itemTitle); //게시물 정보
-                    return itemTitle.includes(query.toLowerCase());
-                })
-                return matchItem; */
-            } else {
-                setSearchResults([]);
-            }
-        } catch (error) {
-            console.error(error);
-        }
-
-    }
 
     const onKeyDown = (e) => {
         if (e.keyCode === 13) {
-            onSubmit(e);
+
         }
     }
 
-    // const searchEvent = () => {
-    //     if (query.trim() === '') {
-    //         setResult([]);
-    //     } else {
-    //         onSubmit(query).then((text) => {
-    //             setResult(text);
-    //         }).catch((error) => console.error(error));
-    //     }
-    // }
-
     return (
-        <>
-            <SearchForm onSubmit={onSubmit} visible={`${visible}`} className={visible ? 'on' : null} ref={searchFormRef}>
-                {/* 돋보기 버튼 눌렀을 때 입력창 나오게 */}
-                <div className={`btn-container ${visible ? 'hide' : ''}`}>
-                    <button onClick={toggleInputOpen} className='open-btn'>
-                        <BiSearch className='search-btn' />
-                    </button>
-                </div>
-                <div className={`btn-container ${visible ? '' : 'hide'}`}>
-                    <button className='enter-btn' >
-                        <BiSearch className='search-btn' />
-                    </button>
-                </div>
+        <SearchWrapper className='container'>
+            <div className='searchBox'>
+                <input type='text'
+                    placeholder='검색어를 입력하세요.'
+                    value={text}
+                    onKeyDown={onKeyDown}
+                    onChange={onChange}
+                />
+                <button>
+                    <BiSearch />
+                </button>
+            </div>
 
-
-                {visible && (
-                    <input type='text'
-                        placeholder='검색어를 입력하세요.'
-                        value={text}
-                        onKeyDown={onKeyDown}
-                        onChange={onChange} />
-                )}
-
-                <ul>
-                    {searchResults.map((post) => (
-                        <SearchList key={post.id} posts={post} />
-                    ))}
-                </ul>
-
-                {/* {clearBtn && (
-                    <button className='close-btn' onClick={onClear}>
-                        <MdClose />
-                    </button>
-                )} */}
-            </SearchForm>
-        </>
-
+            <ul className='searchResultList'>
+                {Array.isArray(result) && result.map((post)=>{
+                    <SearchList key={post.id} posts={post} />
+                })
+                    
+                }
+            </ul>
+        </SearchWrapper>
     );
 }
 
-const SearchForm = styled.form`
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: center;
-    justify-content: center;
-    margin-left: auto;
-    border-radius: 8px;
-    position: relative;
-    
-    &.on{
-        width: 300px; //위에서 고정으로 너비가 지정되어있으니 너비 늘려줘야함
-        border: 1px solid #dedede;
-    }
-    input{
-        width: ${({ visible }) => (visible ? '250px' : '0px')};
-        transition: all 500ms;
-        color: #333;
-        outline: none;
-        border: none;
-    }
-    .btn-container {
+const SearchWrapper = styled.div`
+    padding: 50px;
+    .searchBox{
         display: flex;
         align-items: center;
         justify-content: center;
-        .open-btn, .enter-btn{
+        gap: 6px;
+        input{
+            width: 400px;
+            height: 26px;
+            padding: 6px;
+            border: none;
+            border-bottom: 1px solid #a5a5a5;
+            font-size: 16px;
+            color: #333;
+        }
+        input:focus{
+            outline: none;
+        }
+        input::placeholder{
+            font-family: Noto Sans KR;
+            font-size: 16px;
+        }
+        button{
+            display: flex;
             padding: 0;
-            height: 36px;
-            .search-btn{
-                font-size: 24px;
+            border: none;
+            background-color: transparent;
+            svg{
+                width: 24px;
+                height: 24px;
                 color: #555;
-                padding: 6px;
             }
         }
+        
     }
-    .btn-container.hide {
-        display: none;
+    .searchResultList{
+    display: flex;
+    gap: 14px;
+    flex-direction: column;
+    li{
+        > div{
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+        }
     }
-    /* .close-btn{
-        color: #333;
-        background-color: #333;
-        top: 0;
-        right: 0;
-        display: flex;
-        align-items: center;
-        margin-left: auto;
-    } */
+    img{
+        width: 150px;
+        border-radius: 10px;
+        
+    }
+}
 `
 
 export default Search;

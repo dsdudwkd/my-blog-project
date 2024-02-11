@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { sendEmail } from '../api/gmail';
 import { useNavigate } from 'react-router-dom';
 import { logOut } from '../api/firebase';
 import { createUserWithEmailAndPassword, getAuth, updateProfile } from 'firebase/auth';

@@ -2,7 +2,7 @@ import { collection, deleteDoc, doc, getDoc } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import styled from 'styled-components';
-import { auth, db, onUserState, storage } from '../api/firebase';
+import { admin, auth, db, onUserState, storage } from '../api/firebase';
 import SideBar from '../components/SideBar';
 import DOMPurify from 'dompurify';
 import { VscKebabVertical } from "react-icons/vsc";
@@ -24,7 +24,7 @@ function PostDetails() {
     const [isLoading, setIsLoading] = useState(true);
     const { id } = useParams(); // URL에서 게시글 ID 추출 추가
     const navigate = useNavigate();
-    console.log(id)
+    // console.log(id)
 
     useEffect(() => {
         onUserState((user) => {
@@ -83,7 +83,7 @@ function PostDetails() {
     const deletePost = async () => {
         const ok = window.confirm('정말로 삭제하시겠습니까?'); //Unexpected use of 'confirm'" 오류 해결 = 바로 confirm 메서드 말고 window.confirm으로 작성
 
-        if (!ok || user.uid !== post.userId) return;
+        if (!ok || !admin) return;
 
         try {
             await deleteDoc(doc(db, 'posts', post.id)); //문서의 id로 삭제

@@ -90,6 +90,12 @@ function Profile(props) {
             navigate('/');
         }
     }
+
+    // 사용자가 외부 서비스로 로그인한 경우인지 확인
+    const isExternalProvider = user && user.providerData.some(provider =>
+        provider.providerId === "google.com" || provider.providerId === "github.com"
+    );
+
     return (
         <>
             <SideMenu>
@@ -142,7 +148,7 @@ function Profile(props) {
                                 <div>
                                     <input type="password"
                                         id='password'
-                                        placeholder='영문자,숫자,특수문자 포함 최소8~16자'
+                                        placeholder={isExternalProvider? '소셜 로그인(구글, 깃허브) 이용자는 비밀번호를 수정할 수 없습니다.' : '영문자,숫자,특수문자 포함 최소8~16자'}
                                         value={pw}
                                         onChange={(e) => { setPw(e.target.value) }}
                                         onBlur={() => {
@@ -154,6 +160,8 @@ function Profile(props) {
                                         }}
                                         minLength={8}
                                         maxLength={16}
+                                        disabled={isExternalProvider}
+                                        style={{ backgroundColor: isExternalProvider ? '#dedede' : 'transparent', cursor: isExternalProvider ? 'not-allowed' : 'auto' }}
                                     />
                                     {pwErr && <span>{pwErr}</span>}
                                 </div>
@@ -164,7 +172,7 @@ function Profile(props) {
                                 <div>
                                     <input type="password"
                                         id='passwordConfirm'
-                                        placeholder='비밀번호를 확인해주세요'
+                                        placeholder={isExternalProvider? '소셜 로그인(구글, 깃허브) 이용자는 비밀번호를 수정할 수 없습니다.' : '비밀번호를 확인해주세요'}
                                         value={pw2}
                                         onChange={(e) => { setPw2(e.target.value) }}
                                         onBlur={() => {
@@ -178,7 +186,10 @@ function Profile(props) {
                                             }
                                         }}
                                         minLength={8}
-                                        maxLength={16} />
+                                        maxLength={16}
+                                        disabled={isExternalProvider}
+                                        style={{ backgroundColor: isExternalProvider ? '#dedede' : 'transparent', cursor: isExternalProvider ? 'not-allowed' : 'auto' }}
+                                    />
                                     {(pwConfirmErr && <span>{pwConfirmErr}</span>)}
                                 </div>
                             </div>
@@ -281,6 +292,7 @@ const ProfileWrapper = styled.div`
                     color: #999;
                 }
                 #email{
+                    background-color: #dedede;
                     cursor: not-allowed;
                 }
     }
