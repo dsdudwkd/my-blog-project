@@ -38,7 +38,6 @@ googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
 githubAuthProvider.setCustomParameters({ prompt: 'login' });
 
 
-
 //구글 로그인
 export async function googleLogIn() {
     try {
@@ -114,7 +113,6 @@ export function onUserState(callback) {
     })
 }
 
-
 //회원가입한 이메일로 로그인하기
 export async function loginEmail(email, password) {
     try {
@@ -125,23 +123,5 @@ export async function loginEmail(email, password) {
     }
 }
 
-//파이어베이스에 카테고리 연동
-// export async function addCategory(category) {
-//     const id = uuid();
-//     return await addDoc(collection(db, 'categories'), {
-//         mainCategory: category,
-//     });
-// }
-
-//연동된 카테고리 가져오기
-// export async function getCategories() {
-//     return get(ref(database, 'category')).then((snapShot) => {
-//         if (snapShot.exists()) {
-//             return Object.values(snapShot.val());
-//         } else {
-//             return []
-//         }
-//     })
-// }
 
 export default firebase;

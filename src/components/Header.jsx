@@ -45,7 +45,7 @@ function Header(props) {
             </nav>
             <div className='userWrapper'>
                 <Link to='/search'>
-                    <IoSearch className='search' />
+                    <button className='search'>검색</button>
                 </Link>
 
                 {user && user.isAdmin && (

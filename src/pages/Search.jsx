@@ -3,7 +3,6 @@ import SearchList from '../components/SearchList';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import styled from 'styled-components';
-import { MdClose } from 'react-icons/md';
 import { BiSearch } from 'react-icons/bi';
 
 function Search(props) {
@@ -11,42 +10,50 @@ function Search(props) {
     const [text, setText] = useState('');
     const [result, setResult] = useState([]);
 
-    useEffect(()=>{
-        if(text.trim() === ''){
-            setResult([]);
-        } else {
-            searchPosts(text).then((txt)=>{
-                setResult(txt);
-            }).catch((error)=>{
-                console.error(error);
-            })
-        }
-    }, [text]);
+    useEffect(() => {
 
-    const searchPosts = async (word) => {
+        console.log(result)
+    }, [result]);
+
+    const searchPost = async (word) => {
         try {
             const q = query(collection(db, "posts"));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
-                const matchItem = querySnapshot.docs.map(doc => doc.data())
-                return matchItem.filter(post => post.title.toLowerCase().includes(word.toLowerCase()));
+                const matchItem = querySnapshot.docs.filter((post) => {
+                    const postWord = post.data().title.toLowerCase() || post.data().post.toLowerCase();
+                    return postWord.includes(word.toLowerCase());
+                });
+                return matchItem;
             } else {
                 return [];
             }
         } catch (error) {
             console.error(error);
-            return [];
+            throw error;
         }
     }
-    
+
+    const searchEvent = async () => {
+        if (text.trim() === '') {
+            setResult([]);
+        } else {
+            try {
+                const txt = await searchPost(text);
+                setResult(txt);
+            } catch (error) {
+                console.error(error);
+            }
+        }
+    }
+
     const onChange = (e) => {
         setText(e.target.value);
     }
 
-
     const onKeyDown = (e) => {
         if (e.keyCode === 13) {
-
+            searchEvent();
         }
     }
 
@@ -59,16 +66,20 @@ function Search(props) {
                     onKeyDown={onKeyDown}
                     onChange={onChange}
                 />
-                <button>
+                <button onClick={searchEvent}>
                     <BiSearch />
                 </button>
             </div>
-
+            <div className='searchResultTitle'>
+                {result.length > 0 ?
+                    <h2>'<span>{text}</span>'의 검색 결과 <span>{result.length}</span></h2>
+                    :
+                    <h2>'<span>{text}</span>'의 검색 결과가 없습니다.</h2>
+                }
+            </div>
             <ul className='searchResultList'>
-                {Array.isArray(result) && result.map((post)=>{
-                    <SearchList key={post.id} posts={post} />
-                })
-                    
+                {result.map((post) => (
+                    <SearchList key={post.id} posts={post.data()} />))
                 }
             </ul>
         </SearchWrapper>
@@ -82,6 +93,7 @@ const SearchWrapper = styled.div`
         align-items: center;
         justify-content: center;
         gap: 6px;
+        margin-bottom: 80px;
         input{
             width: 400px;
             height: 26px;
@@ -111,22 +123,73 @@ const SearchWrapper = styled.div`
         }
         
     }
-    .searchResultList{
-    display: flex;
-    gap: 14px;
-    flex-direction: column;
-    li{
-        > div{
-            display: flex;
-            gap: 30px;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #ddd;
+    .searchResultTitle{
+        display: flex;
+        h2{
+            color: #333;
+            margin: 0 auto;
+            margin-bottom: 30px;
+            span{
+                color: #fb5151;
+            }
         }
     }
-    img{
-        width: 150px;
-        border-radius: 10px;
+    .searchResultList{
+    display: flex;
+    gap: 30px;
+    flex-wrap: wrap;
+    align-items: center;
+    li{
+        width: 250px;
+        max-height: 300px;
+        align-items: center;
+        justify-content: center;
+        .postsItem{
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            cursor: pointer;
+            img{
+                height: 200px;
+            }
+            .no-image{
+                background-color: #ebebeb;
+                height: 200px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                span{
+                    color: #333;
+                    font-weight: 600;
+                }
+                
+            }
+            .itemTitle{
+                color: #333;
+                text-overflow: ellipsis;
+                font-family: Noto Sans KR;
+            }
+            p{
+                display: -webkit-box; 
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3; //콘텐츠를 지정한 줄 수만큼으로 제한
+                overflow: hidden;
+                white-space: break-spaces;//연속된 공백을 적용
+                color: #888;
+                font-family: Noto Sans KR;
+                p,em,span{
+                    display: inline;
+                    font-style: normal;
+                    font-size: 14px;
+                    text-overflow: ellipsis; //말줄임표
+                    line-height: 1.2;
+                }
+            }
+            .postDate{
+                font-size: 12px;
+            }
+        }
+        
         
     }
 }
