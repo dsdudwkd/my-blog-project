@@ -239,9 +239,9 @@ const ProfileWrapper = styled.div`
     }
     .userImg{
         margin-bottom: 30px;
+        position: relative;
         label{
             cursor: pointer;
-            position: relative;
             margin-bottom: 30px;
             .updateImg{
                 width: 80px;
@@ -254,7 +254,7 @@ const ProfileWrapper = styled.div`
             }
             .camera{
                 position: absolute;
-                top: -8px;
+                top: 50px;
                 left: 55px;
                 border-radius: 100%;
                 padding: 6px;

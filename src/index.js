@@ -68,6 +68,7 @@ const router = createBrowserRouter([
           </AdminRoute>
       },
       { path: '/search', element: <Search /> },
+      { path: '/search/:id', element: <Search /> },
       { path: '/login', element: <Login /> },
       { path: '/resetPw', element: <ResetPw /> },
       { path: '/join', element: <Join /> },

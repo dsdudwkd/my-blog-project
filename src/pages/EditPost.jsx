@@ -10,9 +10,6 @@ import { FaPlus } from "react-icons/fa";
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { MdPhotoCamera } from "react-icons/md";
 
-
-
-
 const EditPost = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [title, setTitle] = useState('');
@@ -80,45 +77,6 @@ const EditPost = () => {
         });
     };
 
-
-    // const uploadAndInsertImage = async (file) => {
-    //     try {
-    //         const maxSize = 1024 * 1024 - 89; // 1MB (원하는 최대 크기로 설정)
-
-    //         // 이미지를 Firebase Storage에 업로드
-    //         const storagePath = `post/${user.uid}-${user.displayName}/${file.name}`;
-    //         const fileRef = storageRef(storage, storagePath);
-    //         const snapshot = await uploadBytes(fileRef, file);
-
-    //         // 업로드된 이미지의 다운로드 URL 가져오기
-    //         const imageUrl = await getDownloadURL(snapshot.ref);
-
-    //         // 이미지 크기 조절
-    //         const resizedImageUrl = await resizeImage(imageUrl, 800, 600); // 원하는 크기로 조절
-
-    //         // Quill Editor에 이미지 추가
-    //         const editor = quillRef.current?.getEditor();
-    //         if (editor) {
-    //             const range = editor.getSelection(true);
-    //             editor.insertEmbed(range.index, "image", resizedImageUrl);
-    //             editor.setSelection(range.index + 1);
-    //         }
-    //     } catch (error) {
-    //         console.error("이미지 업로드 및 추가 오류:", error);
-    //     }
-    // };
-
-    // 이미지 업로드 핸들러
-    // const imageHandler = () => {
-    //     const input = document.createElement("input");
-    //     input.setAttribute("type", "file");
-    //     input.setAttribute("accept", "image/*");
-    //     input.click();
-    //     input.addEventListener("change", async () => {
-    //         const file = input.files[0];
-    //         uploadAndInsertImage(file);
-    //     });
-    // };
     const onFileChange = (e) => {
         const { files } = e.target;
         postInfo.mainPhotoURL = files;
@@ -159,45 +117,6 @@ const EditPost = () => {
 
         const updatedTitle = title || postInfo.title; // 수정하지 않았다면 기존 값을 사용
         const updatedPost = post || postInfo.post; // 수정하지 않았다면 기존 값을 사용
-
-        //     try {
-        //         setIsLoading(true);
-        //         const updateDocRef = doc(db, 'posts', `${postInfo.id}`);
-
-        //         await setDoc(updateDocRef, {
-        //             title: postInfo.title || title,
-        //             post: postInfo.post || post,
-        //             createdAt: postInfo.createdAt,
-        //             userId: user.uid,
-        //             userName: user.displayName || "익명"
-        //         });
-        //         if (mainFile) {
-        //             const locationRef = ref(storage, `post/${user.uid}/${postInfo.id}`)
-        //             const snapShot = await uploadBytes(locationRef, mainFile);
-        //             const url = await getDownloadURL(snapShot.ref);
-
-        //             await updateDoc(updateDocRef, {
-        //                 mainPhotoURL: url
-        //             })
-        //         } else {
-        //             await setDoc(updateDocRef, {
-        //                 title: postInfo.title || title,
-        //                 post: postInfo.post || post,
-        //                 createdAt: postInfo.createdAt,
-        //                 userId: user.uid,
-        //                 userName: user.displayName || "익명",
-        //                 mainPhotoURL: postInfo.mainPhotoURL || mainFile
-        //             });
-        //         }
-
-        //     } catch (error) {
-        //         console.error(error);
-        //     } finally {
-        //         setIsLoading(false);
-        //         // navigate(`/posts/detail/${postInfo.id}`);
-        //         navigate(`/`);
-        //     }
-        // }
 
         try {
             setIsLoading(true);

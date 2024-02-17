@@ -4,11 +4,13 @@ import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../api/firebase';
 import styled from 'styled-components';
 import { BiSearch } from 'react-icons/bi';
+import { useNavigate } from 'react-router-dom';
 
 function Search(props) {
 
     const [text, setText] = useState('');
     const [result, setResult] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
 
@@ -16,15 +18,23 @@ function Search(props) {
     }, [result]);
 
     const searchPost = async (word) => {
+        navigate(`/search/${text}`);
         try {
             const q = query(collection(db, "posts"));
             const querySnapshot = await getDocs(q);
             if (!querySnapshot.empty) {
-                const matchItem = querySnapshot.docs.filter((post) => {
-                    const postWord = post.data().title.toLowerCase() || post.data().post.toLowerCase();
+                const matchItems = querySnapshot.docs.map(doc => {
+                    const postData = doc.data();
+                    return {
+                        id: doc.id, // Add the id property
+                        ...postData
+                    };
+                });
+                const filteredItems = matchItems.filter(post => {
+                    const postWord = post.title.toLowerCase() || post.post.toLowerCase();
                     return postWord.includes(word.toLowerCase());
                 });
-                return matchItem;
+                return filteredItems;
             } else {
                 return [];
             }
@@ -79,7 +89,7 @@ function Search(props) {
             </div>
             <ul className='searchResultList'>
                 {result.map((post) => (
-                    <SearchList key={post.id} posts={post.data()} />))
+                    <SearchList key={post.id} posts={post} />))
                 }
             </ul>
         </SearchWrapper>
@@ -138,12 +148,9 @@ const SearchWrapper = styled.div`
     display: flex;
     gap: 30px;
     flex-wrap: wrap;
-    align-items: center;
     li{
         width: 250px;
         max-height: 300px;
-        align-items: center;
-        justify-content: center;
         .postsItem{
             display: flex;
             flex-direction: column;

@@ -1,11 +1,12 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import DOMPurify from 'dompurify';
 function DetailPageEvent({ post }) {
     console.log(post)
 
     const navigate = useNavigate();
+
     const detail = () => {
         navigate(`/posts/detail/${post.id}`, {
             state: {
