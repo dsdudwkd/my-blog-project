@@ -5,7 +5,7 @@ import styled from 'styled-components';
 function SideBar(props) {
     return (
         <Sidebar>
-            <CategoryList />
+            {/* <CategoryList /> */}
         </Sidebar>
     );
 }

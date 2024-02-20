@@ -11,7 +11,6 @@ function WriteReply(postID) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [userInfo, setUserInfo] = useState('');
-    const [currentUser, setCurrentUser] = useState('');
     const [reply, setReply] = useState('');
     const [hover, setHover] = useState(false);
 
@@ -43,9 +42,7 @@ function WriteReply(postID) {
 
         try {
             setIsLoading(true);
-            //글(문서) Id 
 
-            // console.log(postId)
             //해당 글에 대한 댓글 작성을 위해 하위 컬렉션 생성
             const repliesRef = collection(db, 'posts', postId, 'replies');
             //한국 시간 설정(9시간 차이 나므로)
@@ -70,7 +67,7 @@ function WriteReply(postID) {
         onUserState((user) => {
             setUserInfo(user);
         })
-    }, [])
+    }, []);
 
     return (
         <ReplyWrapper className='container'>

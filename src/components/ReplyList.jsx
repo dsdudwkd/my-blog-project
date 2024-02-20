@@ -11,14 +11,10 @@ function ReplyList(post) {
     const [user, setUser] = useState('');
     const [edit, setEdit] = useState('');
     const [show, setShow] = useState(false);
-    const [hover, setHover] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const navigate = useNavigate();
 
     const postID = post.postId;
     const currentUser = auth.currentUser;
-    // const admin = user.isAdmin;
-    // console.log(admin);
     useEffect(() => {
         onUserState((user) => {
             setUser(user);
@@ -153,13 +149,6 @@ function ReplyList(post) {
         } finally{
             setIsLoading(false);
         }
-    }
-
-    const onMouseEnter = () => {
-        setHover(true);
-    }
-    const onMouseLeave = () => {
-        setHover(false);
     }
 
     return (
