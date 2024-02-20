@@ -23,6 +23,8 @@ function Profile(props) {
     const [nameErr, setNameErr] = useState('');
     const [pwErr, setPwErr] = useState('');
     const [pwConfirmErr, setPwConfirmErr] = useState('');
+    const admin = currentUser.isAdmin;
+    console.log(admin);
 
     useEffect(() => {
         onUserState((user) => {
@@ -98,11 +100,13 @@ function Profile(props) {
 
     return (
         <>
-            <SideMenu>
-                <Link to='/editCategory'>
-                    <button className='editCategoryBtn'>카테고리 편집</button>
-                </Link>
-            </SideMenu>
+            {admin &&
+                <SideMenu>
+                    <Link to='/editCategory'>
+                        <button className='editCategoryBtn'>카테고리 편집</button>
+                    </Link>
+                </SideMenu>
+            }
             <ProfileWrapper className='container'>
                 <h2 className='title'>profile</h2>
                 {user &&
@@ -148,7 +152,7 @@ function Profile(props) {
                                 <div>
                                     <input type="password"
                                         id='password'
-                                        placeholder={isExternalProvider? '소셜 로그인(구글, 깃허브) 이용자는 비밀번호를 수정할 수 없습니다.' : '영문자,숫자,특수문자 포함 최소8~16자'}
+                                        placeholder={isExternalProvider ? '소셜 로그인(구글, 깃허브) 이용자는 비밀번호를 수정할 수 없습니다.' : '영문자,숫자,특수문자 포함 최소8~16자'}
                                         value={pw}
                                         onChange={(e) => { setPw(e.target.value) }}
                                         onBlur={() => {
@@ -172,7 +176,7 @@ function Profile(props) {
                                 <div>
                                     <input type="password"
                                         id='passwordConfirm'
-                                        placeholder={isExternalProvider? '소셜 로그인(구글, 깃허브) 이용자는 비밀번호를 수정할 수 없습니다.' : '비밀번호를 확인해주세요'}
+                                        placeholder={isExternalProvider ? '소셜 로그인(구글, 깃허브) 이용자는 비밀번호를 수정할 수 없습니다.' : '비밀번호를 확인해주세요'}
                                         value={pw2}
                                         onChange={(e) => { setPw2(e.target.value) }}
                                         onBlur={() => {
@@ -218,13 +222,22 @@ const SideMenu = styled.aside`
     float: left;
     box-sizing: border-box;
     width: 15.296296296296296%;
-    height: 100%;
+    height: 671.8px;
     padding: 100px 0;
     border-right: 1px solid #e6e6e6;
     .editCategoryBtn{
+        width: 100%;
         margin: 0 auto;
-        display: flex;
-        align-items: center;
+        padding: 10px;
+        border: none;
+        border-radius: 10px;
+        background-color: transparent;
+        font-size: 16px;
+        font-weight: 600;
+        font-family: Noto Sans KR;
+        &:hover{
+            color: #fe3a3a;
+        }
     }
 `
 const ProfileWrapper = styled.div`

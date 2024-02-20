@@ -1,5 +1,5 @@
-import React, { useRef, useState } from 'react';
-import { addCategory, db } from '../api/firebase';
+import React, { useEffect, useRef, useState } from 'react';
+import { auth, db, onUserState } from '../api/firebase';
 import { styled } from 'styled-components';
 import CategoryList from '../components/CategoryList';
 import { FaPlus } from "react-icons/fa";
@@ -8,60 +8,55 @@ import { addDoc, collection } from 'firebase/firestore';
 function AddCategory(props) {
 
     const [category, setCategory] = useState('');
-    // const [newCategory, setNewCategory] = useState('');
 
-    const addMainCategory = (e) => {
+    const onChange = (e) => {
         setCategory(e.target.value);
-    }
-
-    const cancelAdd = () => {
-        const mainCategory = document.querySelector('.addMain');
-        mainCategory.style.display = 'none';
-    }
-
-    const createMain = () => {
-        const createMainCategory = document.querySelector('.addMain');
-        createMainCategory.style.display = 'block';
     }
 
     const onSubmit = async (e) => {
         e.preventDefault();
-        
         try {
-            await addDoc(collection(db, "categories"),{
-                category: category
+            if (category.trim() === '') {
+                alert('글자를 입력해주세요.');
+                return;
+             }
+            await addDoc(collection(db, "categories"), {
+                category: category,
+                createdAt: Date.now(), //firestore는 기본적으로 문서의 id로 정렬이 되어 날짜 순으로 저장되길 바라서 createdAt 필드 추가
             })
+            
         } catch (error) {
             console.error(error);
-        }finally{
+        } finally {
+            document.querySelector('input').value = '';
             setCategory('');
-
         }
+    }
+
+    const cancelEvent = () => {
+        setCategory('');
     }
 
 
     return (
         <CategoryWrapper className='container'>
             <Title>카테고리 관리</Title>
-            <AddButton onClick={createMain} >
-                카테고리 추가
-                <FaPlus />
-            </AddButton>
-            <Form onSubmit={onSubmit} className='form' >
-                <div className='mainCategory addMain' style={{ display: 'none' }}>
+            <Form onSubmit={onSubmit} className='form container' >
+                <div className='mainCategory'>
                     <input
                         type="text"
                         name="title"
-                        placeholder='메인 카테고리'
-                        onChange={addMainCategory}
+                        placeholder='카테고리 추가'
+                        onChange={onChange}
+                        value={category}
                     />
                     <div className='buttons'>
-                        <button onClick={cancelAdd} >취소</button>
-                        <button disabled={category.length < 1}>등록</button>
+                        <button type='reset' onClick={cancelEvent}>취소</button>
+                        <button disabled={category.length < 1} className='addBtn'>추가</button>
                     </div>
                 </div>
             </Form>
-            {/* <CategoryList /> */}
+            <CategoryList category={category} />
         </CategoryWrapper>
     );
 }
@@ -69,44 +64,54 @@ function AddCategory(props) {
 export default AddCategory;
 
 const CategoryWrapper = styled.div`
-    display: flex;
-    flex-direction: column;
-    border: 1px solid black;
-    border-radius: 15px;
     padding: 40px;
-    height: 600px;
 `
 
 const Title = styled.h1`
     font-size: 30px;
+    font-family: Noto Sans KR;
     padding: 10px;
-    margin-bottom: 50px;
+    margin-bottom: 70px;
 `
 
-const AddButton = styled.button`
-    border: 1px solid #999;
-    border-radius: 10px;
-    width: 600px;
-    margin: 0 auto;
-    padding: 10px 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    background-color: #fff;
-    color: #555;
-`
 const Form = styled.form`
-    margin: 0 auto;
-    width: 600px;
+    margin-bottom: 100px;
     .mainCategory{
         width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         input{
-            padding: 10px 20px;
+            width: 500px;
+            padding: 10px;
+            border: none;
+            border-bottom: 1px solid #333;
+            font-size: 16px;
+            font-family: Noto Sans KR;
+            color: #444;
+            &:focus{
+                outline: none;
+            }
         }
         .buttons{
-            display: inline-block;
+            margin-left: 10px;
+            button{
+                background-color: transparent;
+                border: 1px solid #e0e0e0;
+                border-radius: 2px;
+                font-size: 14px;
+                font-family: Noto Sans KR;
+                padding: 10px 18px;
+                &:first-of-type{
+                    margin-right: 4px;
+                }
+                &:hover{
+                    border: 1px solid #999;
+                }
+            }
+            .submit{
+                display: none;
+            }
         }
     }
 `
