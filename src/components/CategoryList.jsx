@@ -7,6 +7,9 @@ function CategoryList() {
 
     const [categories, setCategories] = useState([]);
     const [edit, setEdit] = useState('');
+    const [editingId, setEditingId] = useState(null); // 수정 중인 카테고리의 ID를 저장합니다.
+    const [newCategoryName, setNewCategoryName] = useState(''); // 새로운 카테고리 이름을 저장합니다.
+    const [hoveredId, setHoveredId] = useState(null); // 마우스가 올라가 있는 카테고리의 ID를 저장합니다.
 
     useEffect(() => {
         let unSubscribe = null;
@@ -34,43 +37,29 @@ function CategoryList() {
         }
     }, []);
 
-    const mouserEnter = (event) => {
-        const hoverBtn = event.currentTarget.querySelector('.hoverBtn');
-        hoverBtn.style.display = '';
+    const mouseEnter = (id) => {
+        setHoveredId(id);
     }
 
-    const mouseLeave = (event) => {
-        const hoverBtn = event.currentTarget.querySelector('.hoverBtn');
-        hoverBtn.style.display = 'none';
-
+    const mouseLeave = () => {
+        setHoveredId(null);
     }
 
-    const editCategory = async (e, categoryId) => {
-        // 수정 버튼을 누르면 input에 기존 카테고리 이름이 나타납니다.
-        const input = document.querySelector('input');
-        input.value = e.currentTarget.parentElement.parentElement.children[0].innerText;
-        document.querySelector('.addBtn').innerText = '확인'
-        console.log(categoryId);
-        // 확인 버튼을 누르면 이벤트 핸들러가 실행됩니다.
-        const confirmBtn = document.querySelector('.addBtn');
-        confirmBtn.addEventListener('click', async ()=>{
-            try {
-                // input의 value를 새로운 카테고리 이름으로 설정합니다.
-                // const newCategoryName = edit;
-                const categoryRef = doc(db, 'categories', categoryId);
-                await updateDoc(categoryRef, {
-                    category: input.value
-                });
-                // setEdit('');
-                document.querySelector('.addBtn').innerText = '추가';
-                input.value = '';
-            } catch (error) {
-                console.error(error);
-            }
-        })
-        
+    //확인 버튼 눌렀을 때 카테고리 업데이트
+    const editCategory = async () => {
+        if (editingId && newCategoryName) {
+            const categoryRef = doc(db, 'categories', editingId);
+            await updateDoc(categoryRef, { category: newCategoryName });
+            setEditingId(null);
+            setNewCategoryName('');
+        }
+    };
 
-    }
+    //수정 버튼 누를 시 해당 카테고리의 id와 현재 이름 상태에 저장
+    const startEditing = (categoryId, currentName) => {
+        setEditingId(categoryId);
+        setNewCategoryName(currentName);
+    };
 
     const deleteCategory = async (categoryId) => {
         const ok = window.confirm('정말 삭제하시겠습니까?');
@@ -83,22 +72,33 @@ function CategoryList() {
     }
 
     const cancelEvent = () => {
-        setEdit('');
+        setEditingId('');
     }
 
     return (
         <CategoryListWrapper className='container'>
             <h3>카테고리 목록</h3>
-            <div>
+            <div className='categoryLists'>
                 {categories.map((cate) => (
-                    <li key={cate.id} onMouseEnter={mouserEnter} onMouseLeave={mouseLeave}>
-                        <div className='categoryList'>
-                            {cate.category}
-                        </div>
-                        <div className='hoverBtn' style={{ display: 'none' }}>
-                            <button onClick={(e) => editCategory(e, cate.id)}>수정</button>
-                            <button onClick={() => deleteCategory(cate.id)}>삭제</button>
-                        </div>
+                    <li key={cate.id} onMouseEnter={() => { mouseEnter(cate.id) }} onMouseLeave={mouseLeave}>
+                        {editingId === cate.id ? (
+                            // 수정 중인 카테고리는 input과 확인 버튼을 보여줍니다.
+                            <div className='editingArea'>
+                                <input className='editInput' value={newCategoryName} onChange={(e) => setNewCategoryName(e.target.value)} />
+                                <button type='reset' onClick={cancelEvent}>취소</button>
+                                <button className='submit' onClick={editCategory}>확인</button>
+                            </div>
+                        ) : (
+                            // 그 외의 카테고리는 카테고리 이름과 수정 버튼을 보여줍니다.
+                            <>
+                                <div className='categoryList'>{cate.category}</div>
+                                <div className='hoverBtn' style={{ display: hoveredId === cate.id ? 'block' : 'none' }}>
+                                    <button onClick={() => startEditing(cate.id, cate.category)}>수정</button>
+                                    <button onClick={() => deleteCategory(cate.id)}>삭제</button>
+                                </div>
+
+                            </>
+                        )}
                     </li>
                 ))}
             </div>
@@ -117,7 +117,7 @@ const CategoryListWrapper = styled.ul`
         font-family: Noto Sans KR;
         color: #333;
     }
-    div{
+    .categoryLists{
         li{
             width: 600px;
             height: 16px;
@@ -128,6 +128,33 @@ const CategoryListWrapper = styled.ul`
             border: 1px solid #f1f1f1;
             &:hover{
                 border: 1px solid #d0d0d0;
+            }
+            .editingArea{
+                display: flex;
+                align-items: center;
+                input{
+                    width: 310px;
+                    padding: 8px;
+                    margin-right: 130px;
+                    border: 1px solid #d0d0d0;
+                    border-radius: 2px;
+                    font-size: 16px;
+                    &:focus{
+                        outline: none;
+                    }
+                }
+                button{
+                    padding: 8px 20px;
+                    border: 1px solid #d0d0d0;
+                    border-radius: 2px;
+                    background-color: #fff;
+                    &:first-of-type{
+                        margin-right: 4px;
+                    }
+                    &:hover{
+                        border: 1px solid #999;
+                    }
+                }                
             }
             .categoryList {
                 display: flex;
@@ -147,8 +174,14 @@ const CategoryListWrapper = styled.ul`
                 button{
                     padding: 6px 12px;
                     border: 1px solid #d0d0d0;
+                    border-radius: 2px;
+                    background-color: #fff;
+                    font-family: Noto Sans KR;
                     &:first-of-type{
                         margin-right: 4px;
+                    }
+                    &:hover{
+                        border: 1px solid #999;
                     }
                 }
             }
