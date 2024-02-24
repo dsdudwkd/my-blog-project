@@ -110,6 +110,7 @@ function PostDetails() {
 
             {/* style={{background:`url(${post.photoURL}) no-repeat center / cover`}} react에서 inline으로 백그라운드 넣는 법 */}
             <Title className='title' style={backgroundStyle}>
+                {post && <h3>{post.category}</h3>}
                 {post && <h2>{post.title}</h2>}
                 <div>
                     {post && <span>{post.userName}</span>}
@@ -163,7 +164,11 @@ const Title = styled.div`
     font-family: Noto Sans KR;
     text-align: left;
     box-sizing: border-box;
-        
+    h3{
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+    }
     h2{
         font-size: 34px;
         color: #fff;

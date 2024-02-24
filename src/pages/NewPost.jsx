@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
-import { addDoc, collection, doc, refEqual, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, onSnapshot, orderBy, query, refEqual, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
@@ -17,6 +17,8 @@ const NewPost = () => {
     const [file, setFile] = useState(null);
     const [previewURL, setPreviewURL] = useState(null);
     const [docRef, setDocRef] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selected, setSelected] = useState('카테고리 없음');
     const user = auth.currentUser;
     const quillRef = useRef(null);
     const navigate = useNavigate();
@@ -36,6 +38,32 @@ const NewPost = () => {
             imageHandler();
         })
     }, [])
+
+    useEffect(() => {
+        let unSubscribe = null;
+
+        const fetchCategories = async () => {
+            const categoryQuery = query(
+                collection(db, 'categories'),
+                orderBy('createdAt', 'asc'), //카테고리 날짜순으로 정렬
+            )
+            unSubscribe = await onSnapshot((categoryQuery), (snapshot) => {
+                const categoryArr = snapshot.docs.map((doc) => {
+                    const { category } = doc.data();
+                    // console.log(doc.data());
+                    return {
+                        category,
+                        id: doc.id
+                    }
+                })
+                setCategories(categoryArr);
+            })
+        }
+        fetchCategories();
+        return () => {
+            if (unSubscribe) unSubscribe();
+        }
+    }, []);
 
     const imageHandler = async () => { //quill Editor 이미지 첨부 시 이미지 처리 및 스토리지에 추가하는 함수
         const input = document.createElement("input");
@@ -58,7 +86,7 @@ const NewPost = () => {
                     alert("업로드 가능한 최대 이미지 용량은 1MB입니다.");
                     return;
                 }
-                
+
                 editor.insertEmbed(range.index, "image", url);
                 editor.setSelection(range.index + 1);
             } catch (error) {
@@ -70,7 +98,7 @@ const NewPost = () => {
         const { files } = e.target;
         const fileSize = files[0].size;
         const maxSize = 1024 * 1024 * 1;
-        
+
         if (files && files.length === 1) {
             if (fileSize < maxSize) { //사진 1MB 용량만 첨부할 수 있도록 추가
                 setFile(files[0]);
@@ -90,6 +118,10 @@ const NewPost = () => {
         }
     };
 
+    const selectBox = (e) => {
+        setSelected(e.target.value);
+    }
+
     const onSubmit = async (e) => {
         e.preventDefault();
 
@@ -108,10 +140,11 @@ const NewPost = () => {
                 title,
                 post,
                 createdAt: new Date((new Date()).getTime() + kr_time).toISOString().replace('T', ' ').substring(0, 16),
+                category: selected,
                 userId: user.uid,
                 userName: user.displayName || "익명"
             });
-            
+
             if (file) {
                 const locationRef = ref(storage, `post/${user.uid}/${newDocRef.id}`)
                 const snapShot = await uploadBytes(locationRef, file);
@@ -133,17 +166,17 @@ const NewPost = () => {
         }
     }
 
-
     return (
         <PostWrapper>
             <div className='container'>
                 <form onSubmit={onSubmit}>
-
                     <div className='select-category'>
-                        {/* <label htmlFor="choose-category">카테고리</label> */}
-                        <select name="choose-category" id="choose-category" placeholder='카테고리'>
-                            <option value="categoryList" id="choose-category">카테고리</option>
-                            <option value="categoryList" id="choose-category">카테고리 없음</option>
+                        <label htmlFor="choose-category"></label>
+                        <select onChange={selectBox} name="categories" id="choose-category" >
+                            <option value={'카테고리 없음'} selected>카테고리 없음</option>
+                            {categories.map((cate) => (
+                               <option  key={cate.id} value={cate.category} >{cate.category}</option>
+                            ))}
                         </select>
                     </div>
                     <div className='postTitle'>
