@@ -9,6 +9,8 @@ import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/st
 import { FaPlus } from "react-icons/fa";
 import { DOMPurify } from 'dompurify';
 import { useNavigate } from 'react-router-dom';
+import { ImageResize } from "quill-image-resize-module-react"; // 라이브러리를 임포트합니다.
+Quill.register("modules/ImageResize", ImageResize); // Quill에 등록합니다.
 
 const NewPost = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -87,7 +89,7 @@ const NewPost = () => {
                     return;
                 }
 
-                editor.insertEmbed(range.index, "image", url);
+                // editor.insertEmbed(range.index, "image", url);
                 editor.setSelection(range.index + 1);
             } catch (error) {
                 console.log(error);
@@ -171,7 +173,7 @@ const NewPost = () => {
             <div className='container'>
                 <form onSubmit={onSubmit}>
                     <div className='select-category'>
-                        <label htmlFor="choose-category"></label>
+                        {/* <label htmlFor="choose-category"></label> */}
                         <select onChange={selectBox} name="categories" id="choose-category" >
                             <option value={'카테고리 없음'} selected>카테고리 없음</option>
                             {categories.map((cate) => (

@@ -1,11 +1,13 @@
 import React from 'react';
-import CategoryList from './CategoryList';
 import styled from 'styled-components';
+import CategoryMenu from './CategoryMenu';
 
 function SideBar(props) {
     return (
         <Sidebar>
-            {/* <CategoryList /> */}
+            <CategoryItemList>
+                <CategoryMenu />
+            </CategoryItemList>
         </Sidebar>
     );
 }
@@ -15,7 +17,12 @@ export default SideBar;
 const Sidebar = styled.aside`
     float: left;
     box-sizing: border-box;
-    width: 21.296296296296296%;
-    padding: 80px 0;
-    border-right: 1px solid #e6e6e6;
+    width: 29.296296296296296%;
+    padding: 80px 0 80px 20px;
+`
+
+const CategoryItemList = styled.ul`
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 `

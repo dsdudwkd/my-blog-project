@@ -96,12 +96,12 @@ const ContentContainer = styled.ul`
     display: flex;
     flex-direction:column;
     gap: 20px;
-    
-    `
+    border-left: 1px solid #e6e6e6;
+`
 
 const ContentList = styled.li`
     list-style: none;
-    padding: 60px 30px;
+    padding: 60px 50px;
     font-family: Noto Sans KR;
     cursor: pointer;
 `

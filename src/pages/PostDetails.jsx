@@ -30,10 +30,11 @@ function PostDetails() {
         onUserState((user) => {
             setUser(user);
         })
+        window.scrollTo(0, 0); //디테일 페이지 이동 시 스크롤이 최상단에 고정되도록
     }, [])
 
-     //추가
-     useEffect(() => {
+    //추가
+    useEffect(() => {
         const fetchPost = async () => {
             setIsLoading(true);
             try {
@@ -113,7 +114,7 @@ function PostDetails() {
                 {post && <h3>{post.category}</h3>}
                 {post && <h2>{post.title}</h2>}
                 <div>
-                    {post && <span>{post.userName}</span>}
+                    {post && <span className='userName'>{post.userName}</span>}
                     {post && <span>{post.createdAt}</span>}
                     {currentUser && user.isAdmin ? //작성자가 아닌 경우엔 이 버튼이 보이지 않게 => 어차피 관리자만 작성하므로 관리자인 경우에만 버튼 보이게 수정
                         (<VscKebabVertical className='svg' onClick={handleBtn} />) : null
@@ -154,7 +155,7 @@ export default PostDetails;
 
 const DetailsWrapper = styled.div`
     overflow: hidden;
-    position: relative;
+    /* position: relative; */
 `
 const Title = styled.div`
     padding: 100px 50px 50px;
@@ -179,6 +180,9 @@ const Title = styled.div`
         gap: 16px;
         color: #fbfbfb;
         font-size: 14px;
+        .userName{
+            width: 70px;
+        }
         svg{
             width: 16px;
             height: 16px;
@@ -193,12 +197,12 @@ const Title = styled.div`
 
 const Container = styled.div`
 `
-
 const Post = styled.div`
     float: right;
-    width: calc(100% - (21.296296296296296%));
+    width: calc(100% - (29.296296296296296%));
     padding: 72px 60px;
     box-sizing: border-box;
+    border-left: 1px solid #e6e6e6;
     p{
         line-height: 1.5;
     }
@@ -215,9 +219,9 @@ const Button = styled.div`
     flex-direction: column;
     gap: 5px;
     padding: 10px 0;
-    position: absolute;
-    top: 200px;
-    left: 200px;
+    position: fixed;
+    top: 360px;
+    left: 220px;
     border: 1px solid #ECECEC;
     border-radius: 4px;
     background-color: #fff;

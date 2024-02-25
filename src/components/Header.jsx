@@ -7,7 +7,7 @@ import { useAuthContext } from '../context/AuthContext';
 import UserData from './UserData';
 import { IoSearch } from "react-icons/io5";
 import Search from '../pages/Search';
-import CategoryList from './CategoryList';
+import CategoryMenu from './CategoryMenu';
 
 function Header(props) {
 
@@ -44,7 +44,9 @@ function Header(props) {
                 <h2>HOME</h2>
             </Link>
             <nav>
-                {/* <CategoryList /> */}
+                <CategoryItemList>
+                    <CategoryMenu />
+                </CategoryItemList>
             </nav>
             <div className='userWrapper'>
                 <Link to='/search'>
@@ -130,7 +132,10 @@ const HeaderContainer = styled.header`
         }
         
     }
-
-    
+`
+const CategoryItemList = styled.ul`
+    display: flex;
+    gap: 30px;
+    padding: 24px;
 `
 

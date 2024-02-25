@@ -18,6 +18,7 @@ import { auth } from './api/firebase';
 import PostDetails from './pages/PostDetails';
 import EditPost from './pages/EditPost';
 import Loading from './components/Loading';
+import CategoryPage from './components/CategoryPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -88,7 +89,7 @@ const router = createBrowserRouter([
       },
       { path: '/posts/detail/:id', element: <PostDetails /> },
       { path: '/posts/edit/:id', element: <EditPost /> },
-
+      { path: '/category/:category', element: <CategoryPage /> },
     ]
   }
 

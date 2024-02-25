@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import styled from 'styled-components';
-import { doc, refEqual, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, orderBy, query, refEqual, setDoc, updateDoc } from 'firebase/firestore';
 import { formats, modules } from '../api/QuillEditor';
 import { auth, db, storage } from '../api/firebase';
 import { getDownloadURL, uploadBytes, ref as storageRef, ref } from 'firebase/storage';
@@ -16,6 +16,8 @@ const EditPost = () => {
     const [post, setPost] = useState('');
     const [mainFile, setMainFile] = useState(null);
     const [previewURL, setPreviewURL] = useState(null);
+    const [categories, setCategories] = useState([]);
+    const [selected, setSelected] = useState('카테고리 없음');
     const user = auth.currentUser;
     const quillRef = useRef(null);
     const navigate = useNavigate();
@@ -38,6 +40,30 @@ const EditPost = () => {
         // 기존 글 데이터를 가져와서 표시
         setTitle(postInfo.title);
         setPost(postInfo.post);
+
+        let unSubscribe = null;
+
+        const fetchCategories = async () => {
+            const categoryQuery = query(
+                collection(db, 'categories'),
+                orderBy('createdAt', 'asc'), //카테고리 날짜순으로 정렬
+            )
+            unSubscribe = await onSnapshot((categoryQuery), (snapshot) => {
+                const categoryArr = snapshot.docs.map((doc) => {
+                    const { category } = doc.data();
+                    // console.log(doc.data());
+                    return {
+                        category,
+                        id: doc.id
+                    }
+                })
+                setCategories(categoryArr);
+            })
+        }
+        fetchCategories();
+        return () => {
+            if (unSubscribe) unSubscribe();
+        }
     }, [postInfo.title, postInfo.post]);
 
     useEffect(() => {
@@ -102,6 +128,9 @@ const EditPost = () => {
         }
     };
 
+    const selectBox = (e) => {
+        setSelected(e.target.value);
+    }
 
     const onSubmit = async (e) => {
         e.preventDefault();
@@ -117,7 +146,7 @@ const EditPost = () => {
 
         const updatedTitle = title || postInfo.title; // 수정하지 않았다면 기존 값을 사용
         const updatedPost = post || postInfo.post; // 수정하지 않았다면 기존 값을 사용
-
+        const updateCategory = selected || postInfo.category;
         try {
             setIsLoading(true);
             const postRef = doc(db, 'posts', postInfo.id);
@@ -125,6 +154,7 @@ const EditPost = () => {
             await updateDoc(postRef, {
                 title: updatedTitle,
                 post: updatedPost,
+                category: updateCategory,
                 // 필요한 다른 필드 업데이트
             });
 
@@ -147,12 +177,13 @@ const EditPost = () => {
         <PostWrapper>
             <div className='container'>
                 <form onSubmit={onSubmit}>
-
-                    <div className='select-category'>
-                        {/* <label htmlFor="choose-category">카테고리</label> */}
-                        <select name="choose-category" id="choose-category" placeholder='카테고리'>
-                            <option value="categoryList" id="choose-category">카테고리</option>
-                            <option value="categoryList" id="choose-category">카테고리 없음</option>
+                <div className='select-category'>
+                        {/* <label htmlFor="choose-category"></label> */}
+                        <select onChange={selectBox} name="categories" id="choose-category" >
+                            <option value={'카테고리 없음'} selected>카테고리 없음</option>
+                            {categories.map((cate) => (
+                               <option  key={cate.id} value={cate.category} >{cate.category}</option>
+                            ))}
                         </select>
                     </div>
                     <div className='postTitle'>
