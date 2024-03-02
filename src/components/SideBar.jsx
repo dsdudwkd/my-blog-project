@@ -17,8 +17,8 @@ export default SideBar;
 const Sidebar = styled.aside`
     float: left;
     box-sizing: border-box;
-    width: 29.296296296296296%;
-    padding: 80px 0 80px 20px;
+    width: 21.296296296296296%;
+    padding: 80px 0;
 `
 
 const CategoryItemList = styled.ul`

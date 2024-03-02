@@ -44,7 +44,6 @@ function CategoryMenu(props) {
     
 
     return (
-        /* 스타일 컴포넌트 */
         <>
             {setCategoryArr && setCategoryArr.map((category, index) => (
                 <CategoryItem key={index}>

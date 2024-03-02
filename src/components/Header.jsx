@@ -44,6 +44,7 @@ function Header(props) {
                 <h2>HOME</h2>
             </Link>
             <nav>
+                {/* 스타일 컴포넌트 */}
                 <CategoryItemList>
                     <CategoryMenu />
                 </CategoryItemList>

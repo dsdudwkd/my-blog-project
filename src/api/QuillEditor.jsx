@@ -1,7 +1,5 @@
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { ImageResize } from "quill-image-resize-module-react"; // 라이브러리를 임포트합니다.
-Quill.register("modules/ImageResize", ImageResize); // Quill에 등록합니다.
 
 export const modules = {
     toolbar: [
@@ -18,11 +16,6 @@ export const modules = {
         ["blockquote", "code-block"],
         ["clean"],
     ],
-    ImageResize: [
-        [{parchment: Quill.import("parchment")}],
-        [{modules : ["Resize", "DisplaySize"]}]
-    ],
-
 };
 export const formats = [
     "font",
