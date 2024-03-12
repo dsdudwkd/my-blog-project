@@ -1,22 +1,32 @@
 import React from 'react';
 import DetailPageEvent from './DetailPageEvent';
 import styled from 'styled-components';
+import SideBar from './SideBar';
 function CategoryPostList({ category, posts }) {
     return (
-        <CategoryPostWrapper>
-            <div>
-                <h2>{category}</h2>
-                <span>{posts.length}</span>
-            </div>
+        <>
 
-            <ul>
-                {posts.map((post) => (
-                    <li key={post.id}>
-                        <DetailPageEvent post={post} />
-                    </li>
-                ))}
-            </ul>
-        </CategoryPostWrapper>
+            <CategoryPostWrapper className='container'>
+                <div>
+                    <h2>{category} <p>{posts.length}</p></h2>
+                </div>
+                {posts.length > 0 ?
+                    <ul>
+                        {posts.map((post) => (
+                            <li key={post.id}>
+                                <DetailPageEvent post={post} />
+                            </li>
+                        ))}
+                    </ul>
+                    :
+                    <div className='nothing'>
+                        <p>선택하신 카테고리에 해당하는 글이 없습니다.</p>
+                        <p>다른 카테고리를 선택하시거나, 검색 기능을 활용해 보세요.</p>
+                    </div>
+                }
+            </CategoryPostWrapper>
+        </>
+
     );
 }
 
@@ -24,11 +34,17 @@ export default CategoryPostList;
 
 const CategoryPostWrapper = styled.div`
     padding: 50px;
+    min-height: 1280px;
     h2{
         display: flex;
         justify-content: center;
         color: #333;
         margin: 0 auto;
+        margin-bottom: 50px;
+        p{
+            color: red;
+            margin-left: 10px;
+        }
     }
     ul{
         min-height: 1280px;
@@ -82,6 +98,17 @@ const CategoryPostWrapper = styled.div`
                 .postDate{
                     font-size: 12px;
                 }
+            }
+        }
+    }
+    .nothing{
+        margin: 0 auto;
+        position: relative;
+        width: 50%;
+        p{
+            font-family: Noto Sans KR;
+            &:first-of-type{
+                margin-bottom: 10px;
             }
         }
     }

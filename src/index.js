@@ -5,7 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { Navigate, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import NotFound from './pages/NotFound';
-import AllContent from './pages/AllContent';
+import Home from './pages/Home';
 import NewPost from './pages/NewPost';
 import Login from './pages/Login';
 import Join from './pages/Join';
@@ -19,6 +19,7 @@ import PostDetails from './pages/PostDetails';
 import EditPost from './pages/EditPost';
 import Loading from './components/Loading';
 import CategoryPage from './components/CategoryPage';
+import AllContent from './pages/Home';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -90,6 +91,7 @@ const router = createBrowserRouter([
       { path: '/posts/detail/:id', element: <PostDetails /> },
       { path: '/posts/edit/:id', element: <EditPost /> },
       { path: '/category/:category', element: <CategoryPage /> },
+      { path: '/category', element: <AllContent /> },
     ]
   }
 

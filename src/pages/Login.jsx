@@ -102,13 +102,16 @@ const LogInWrapper = styled.div`
                 margin-bottom: 25px;
                 input{
                     width: 100%;
-                    padding: 12px 0;
+                    padding: 12px 6px;
                     border: none;
                     border-bottom: 1px solid #b3b2b2;
                     background-color: transparent;
                 }
                 input::placeholder{
                     font-family: Noto Sans KR;
+                }
+                input:focus{
+                    outline-color: #abc3da;
                 }
             }
             p{

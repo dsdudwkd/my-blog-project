@@ -1,14 +1,23 @@
 import React from 'react';
 import styled from 'styled-components';
 import CategoryMenu from './CategoryMenu';
+import AllPosts from './AllPosts';
 
 function SideBar(props) {
     return (
-        <Sidebar>
-            <CategoryItemList>
-                <CategoryMenu />
-            </CategoryItemList>
-        </Sidebar>
+        <div className='container'>
+
+            <Sidebar>
+                <CategoryItemList>
+                    <div>
+                        분류 전체보기
+                        <AllPosts />
+                    </div>
+                    <CategoryMenu />
+                </CategoryItemList>
+            </Sidebar>
+        </div>
+
     );
 }
 
@@ -24,5 +33,26 @@ const Sidebar = styled.aside`
 const CategoryItemList = styled.ul`
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 40px;
+    color: #666;
+    font-size: 16px;
+    font-family: 'Noto Sans KR','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    .categoryMenu{
+        position: relative;
+        color: #666;
+        font-size: 16px;
+        font-family: 'Noto Sans KR','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        &:hover{
+            color: black;
+        }
+        &:hover::after{
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #666;
+        }
+    }
 `

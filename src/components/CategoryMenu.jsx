@@ -9,7 +9,7 @@ function CategoryMenu(props) {
     const [categories, setCategories] = useState([]);
     const setCategory = new Set();
 
-    if(categories) {
+    if(categories) { 
         categories.forEach((categoryObj)=>{
             setCategory.add(categoryObj.category);
         })
@@ -42,15 +42,14 @@ function CategoryMenu(props) {
         }
     }, []);
     
-
+    console.log(setCategoryArr)
     return (
         <>
             {setCategoryArr && setCategoryArr.map((category, index) => (
                 <CategoryItem key={index}>
-                    <Link to={`/category/${category}`} >
+                    <Link to={`/category/${category}`} className='categoryMenu' >
                         {category}
                     </Link>
-
                 </CategoryItem>
             ))}
         </>
@@ -62,7 +61,5 @@ function CategoryMenu(props) {
 export default CategoryMenu;
 
 const CategoryItem = styled.li`
-    a{
-        color: #333;
-    }
+    
 `

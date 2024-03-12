@@ -40,15 +40,16 @@ function Header(props) {
             <Link to='/'>
                 <h1 >Annalog</h1>
             </Link>
-            <Link to='/'>
-                <h2>HOME</h2>
-            </Link>
-            <nav>
+
+            <div>
                 {/* 스타일 컴포넌트 */}
                 <CategoryItemList>
+                    <Link to='/'>
+                        <h2>HOME</h2>
+                    </Link>
                     <CategoryMenu />
                 </CategoryItemList>
-            </nav>
+            </div>
             <div className='userWrapper'>
                 <Link to='/search'>
                     <button className='search'>검색</button>
@@ -99,13 +100,7 @@ const HeaderContainer = styled.header`
             font-size: 50px;
             font-family: Ephesis;
         }
-        h2{
-            color: black;
-            font-size: 16px;
-            font-family: 'Noto Sans KR','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-        }
     }
-    
     .userWrapper{
         display: flex;
         align-items: center;
@@ -133,10 +128,29 @@ const HeaderContainer = styled.header`
         }
         
     }
-`
+    `
 const CategoryItemList = styled.ul`
     display: flex;
     gap: 30px;
     padding: 24px;
+    a{
+        position: relative;
+        line-height: 23.2px;
+        font-weight: 600;
+        color: #606060;
+        font-family: 'Noto Sans KR','Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        font-size: 16px;
+        &:hover{
+            color: black;
+        }
+        &:hover::after, &:focus::after{
+            position: absolute;
+            content: "";
+            top: 68px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background-color: #cb836b;
+        }
+    }
 `
-
