@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import CategoryMenu from './CategoryMenu';
 import AllPosts from './AllPosts';
+import { Link } from 'react-router-dom';
 
 function SideBar(props) {
     return (
@@ -9,10 +10,9 @@ function SideBar(props) {
 
             <Sidebar>
                 <CategoryItemList>
-                    <div>
+                    {/* <Link to='/all'>
                         분류 전체보기
-                        <AllPosts />
-                    </div>
+                    </Link> */}
                     <CategoryMenu />
                 </CategoryItemList>
             </Sidebar>

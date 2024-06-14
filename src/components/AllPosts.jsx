@@ -2,10 +2,12 @@ import { collection, limit, onSnapshot, orderBy, query } from 'firebase/firestor
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { db } from '../api/firebase';
+import DOMPurify from 'dompurify';
+import styled from 'styled-components';
 
 function AllPosts(props) {
 
-    
+
     const [posts, setPosts] = useState([]);
     const navigate = useNavigate();
 
@@ -15,7 +17,6 @@ function AllPosts(props) {
             const postQuery = query(
                 collection(db, 'posts'),
                 orderBy("createdAt", "desc"),
-                limit(8) //글을 전부 읽고 불러오는 대신 갯수를 한정지어 그 갯수만큼만 불러오기 => 비용 절약할 수 있음 & slice(0, 8) 대신 사용 가능
             );
             //더 이상 데이터를 리슨할 필요가 없으면 이벤트 콜백이 호출되지 않도록 리스너를 분리해야 함(비용 지불 되기 때문)
             unsubscribe = await onSnapshot((postQuery), (snapshot) => {
@@ -50,14 +51,28 @@ function AllPosts(props) {
                 state: { ...post }
             })
         }
-    }
+    } 
 
 
     return (
         <div>
-            
+            {posts.map((post) => (
+                <div onClick={details} className='postsItem'>
+                    {post.mainPhotoURL ? <img src={post.mainPhotoURL} alt={`${post.title}의 대표 이미지`} /> : <div className='no-image'><span>No Image</span></div>}
+                    <h3 className='itemTitle'>{post.title}</h3>
+                    <p dangerouslySetInnerHTML={{
+                        __html: DOMPurify.sanitize(post.post,
+                            {
+                                ALLOWED_TAGS: ['p', 'em', 'span'], //p, em, span 태그만 보이게
+                                ALLOWED_ATTR: { span: ["style"], p: ["style"], em: ["style"] } //p, em, span 태그에 style 적용되게끔
+                            })
+                    }} />
+                    <p className='postDate'>{post.createdAt}</p>
+                </div>
+            ))}
         </div>
     );
 }
 
 export default AllPosts;
+

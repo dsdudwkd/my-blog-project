@@ -6,7 +6,7 @@ import styled from 'styled-components';
 import PostList from '../components/PostList';
 import { auth } from '../api/firebase';
 
-function AllContent(props) {
+function Home(props) {
 
     return (
         <ContentWrapper>
@@ -17,7 +17,7 @@ function AllContent(props) {
     );
 }
 
-export default AllContent;
+export default Home;
 
 const ContentWrapper = styled.div`
 `

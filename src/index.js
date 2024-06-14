@@ -20,6 +20,7 @@ import EditPost from './pages/EditPost';
 import Loading from './components/Loading';
 import CategoryPage from './components/CategoryPage';
 import AllContent from './pages/Home';
+import AllPosts from './components/AllPosts';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
@@ -34,6 +35,7 @@ const AdminRoute = ({ checkAdmin, children }) => {
 
   //현재 로그인한 사용자가 어드민이 아니거나 로그인하지 않은 경우 홈 화면으로 이동
   if (!user || (checkAdmin && !user.isAdmin)) {
+    alert('접근 권한이 필요합니다.');
     return <Navigate to='/' replace />
   }
   return children;
@@ -91,7 +93,8 @@ const router = createBrowserRouter([
       { path: '/posts/detail/:id', element: <PostDetails /> },
       { path: '/posts/edit/:id', element: <EditPost /> },
       { path: '/category/:category', element: <CategoryPage /> },
-      { path: '/category', element: <AllContent /> },
+      { path: '/category', element: <Home /> },
+      { path: '/all', element: <AllPosts /> },
     ]
   }
 

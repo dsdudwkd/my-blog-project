@@ -7,8 +7,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import Home from './pages/Home';
 import TopBtn from './components/TopBtn';
 import Footer from './components/Footer';
-import SideBar from './components/SideBar';
-
 
 function App() {
 
