@@ -229,7 +229,6 @@ const NewPost = () => {
                 </form>
             </div>
         </PostWrapper>
-
     );
 }
 

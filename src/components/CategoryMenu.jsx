@@ -42,7 +42,7 @@ function CategoryMenu(props) {
         }
     }, []);
     
-    console.log(setCategoryArr)
+    // console.log(setCategoryArr)
     return (
         <>
             {setCategoryArr && setCategoryArr.map((category, index) => (

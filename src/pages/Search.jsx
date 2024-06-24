@@ -11,10 +11,18 @@ function Search(props) {
     const [text, setText] = useState('');
     const [result, setResult] = useState([]);
     const navigate = useNavigate();
+    
+    // 페이지 로드 시 로컬 스토리지에서 검색 결과를 가져옴
+    const savedResult = localStorage.getItem('searchResult');
+    useEffect(() => {
+        if (savedResult) {
+            setResult(JSON.parse(savedResult));
+        }
+    }, []);
 
     useEffect(() => {
-
-        console.log(result)
+        // 검색 결과가 변경될 때마다 로컬 스토리지에 저장
+        localStorage.setItem('searchResult', JSON.stringify(result));
     }, [result]);
 
     const searchPost = async (word) => {

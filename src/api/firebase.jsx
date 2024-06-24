@@ -35,7 +35,7 @@ export const storage = getStorage(app);
 
 //GoogleAuthProvider를 사용할 때마다 구글 팝업을 항상 띄우기를 원한다는 의미 => 자동 로그인 현상 방지
 googleAuthProvider.setCustomParameters({ prompt: 'select_account' });
-githubAuthProvider.setCustomParameters({ prompt: 'login' });
+githubAuthProvider.setCustomParameters({ prompt: 'select_account' });
 
 
 //구글 로그인
@@ -62,6 +62,16 @@ export async function gitHubLogin() {
         const user = result.user;
         return user;
         console.log(user);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+//회원가입한 이메일로 로그인하기
+export async function loginEmail(email, password) {
+    try {
+        const userAccount = await signInWithEmailAndPassword(auth, email, password);
+        return userAccount.user;
     } catch (error) {
         console.error(error);
     }
@@ -113,15 +123,6 @@ export function onUserState(callback) {
     })
 }
 
-//회원가입한 이메일로 로그인하기
-export async function loginEmail(email, password) {
-    try {
-        const userAccount = await signInWithEmailAndPassword(auth, email, password);
-        return userAccount.user;
-    } catch (error) {
-        console.error(error);
-    }
-}
 
 
 export default firebase;

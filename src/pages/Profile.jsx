@@ -24,7 +24,7 @@ function Profile(props) {
     const [pwErr, setPwErr] = useState('');
     const [pwConfirmErr, setPwConfirmErr] = useState('');
     const admin = currentUser.isAdmin;
-    console.log(admin);
+    // console.log(admin);
 
     useEffect(() => {
         onUserState((user) => {
@@ -48,7 +48,6 @@ function Profile(props) {
             await updateProfile(user, {
                 photoURL: url,
             })
-            await updatePassword(user, pw);
             if (fileSize > maxSize) { //사진 1MB 용량만 첨부할 수 있도록 추가
                 alert('업로드 가능한 최대 이미지 용량은 1MB입니다.');
                 return;
@@ -63,13 +62,17 @@ function Profile(props) {
         setPwConfirmErr('');
 
         if (name.trim() === '' || name.length <= 1 || !nameRegex.test(name)) {
-            setNameErr('이름을 정확히 입력해주세요');
+            return setNameErr('이름을 정확히 입력해주세요.');
+
         }
         if (pw.length < 8 || !pwRegex.test(pw)) {
-            setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
+            return setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
         }
         if (pw2.length < 1) {
-            setPwConfirmErr('비밀번호를 입력하세요')
+            return setPwConfirmErr('비밀번호를 입력하세요.')
+        }
+        if (pw !== pw2){
+            return setPwConfirmErr('비밀번호가 일치하지 않습니다.')
         }
 
         try {
@@ -159,7 +162,7 @@ function Profile(props) {
                                             if (pw.length < 8 || !pwRegex.test(pw)) {
                                                 return setPwErr('비밀번호는 8자 이상이며, 영문자, 숫자, 특수문자를 포함해야 합니다.');
                                             } else {
-                                                setPwErr('');
+                                                return setPwErr('');
                                             }
                                         }}
                                         minLength={8}
@@ -182,11 +185,10 @@ function Profile(props) {
                                         onBlur={() => {
                                             if (pw !== pw2) {
                                                 return setPwConfirmErr('비밀번호가 일치하지 않습니다.');
-
                                             } else if (pw2.length < 1) {
                                                 return setPwConfirmErr('비밀번호를 입력해주세요');
                                             } else {
-                                                setPwConfirmErr('');
+                                                return setPwConfirmErr('');
                                             }
                                         }}
                                         minLength={8}

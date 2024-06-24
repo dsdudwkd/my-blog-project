@@ -172,15 +172,15 @@ const EditPost = () => {
             setIsLoading(false);
         }
     }
-
+    
     return (
         <PostWrapper>
             <div className='container'>
                 <form onSubmit={onSubmit}>
                 <div className='select-category'>
                         {/* <label htmlFor="choose-category"></label> */}
-                        <select onChange={selectBox} name="categories" id="choose-category" >
-                            <option value={'카테고리 없음'} selected>카테고리 없음</option>
+                        <select onChange={selectBox} name="categories" id="choose-category" value={postInfo.category || '카테고리 없음'}>
+                            <option value={'카테고리 없음'}>카테고리 없음</option>
                             {categories.map((cate) => (
                                <option  key={cate.id} value={cate.category} >{cate.category}</option>
                             ))}

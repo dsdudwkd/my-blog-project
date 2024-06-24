@@ -207,8 +207,8 @@ const Post = styled.div`
         line-height: 1.5;
     }
     img{
-        width: 300px;
-        height: 300px;
+        /* width: 300px;
+        height: 300px; */
         margin: 0 auto;
     }
 `
@@ -220,7 +220,7 @@ const Button = styled.div`
     gap: 5px;
     padding: 10px 0;
     position: fixed;
-    top: 360px;
+    top: 380px;
     left: 220px;
     border: 1px solid #ECECEC;
     border-radius: 4px;

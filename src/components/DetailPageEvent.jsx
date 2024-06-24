@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { MdOutlineImageNotSupported } from "react-icons/md";
 import DOMPurify from 'dompurify';
 function DetailPageEvent({ post }) {
-    console.log(post)
+    // console.log(post)
 
     const navigate = useNavigate();
 
